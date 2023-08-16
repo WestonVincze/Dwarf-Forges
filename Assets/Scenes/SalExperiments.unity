@@ -591,11 +591,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf18dc2792521d49a1f68c347903916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kp: 1
-  ki: 0
-  kd: 0
-  Pdes: {x: 0, y: 0, z: 0}
-  Vdes: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 0, z: 0}
+  targetVel: {x: 0, y: 0, z: 0}
+  frequency: 0
+  damping: 0
 --- !u!1 &1852071779
 GameObject:
   m_ObjectHideFlags: 0
@@ -703,7 +702,7 @@ GameObject:
   - component: {fileID: 2113937951}
   - component: {fileID: 2113937956}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: PIDyCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -834,8 +833,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cf18dc2792521d49a1f68c347903916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  kp: 1
-  ki: 1
-  kd: 1
-  Pdes: {x: 0, y: 10, z: 0}
-  Vdes: {x: 0, y: 0, z: 0}
+  targetPos: {x: 0, y: 10, z: 0}
+  targetVel: {x: 0, y: 0, z: 0}
+  frequency: 1
+  damping: 1
