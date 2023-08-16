@@ -13,7 +13,7 @@ public class CameraControl : MonoBehaviour
     [SerializeField]
     private float _minPositionY = 2f;
     [SerializeField]
-    private float _maxPositionY = 16f;
+    private float _maxPositionY = 17f;
     [SerializeField] 
     private float _rotationSpeed = 100f;
     [SerializeField]
@@ -27,13 +27,10 @@ public class CameraControl : MonoBehaviour
     private InputAction _panAction;
     private InputAction _fastPanAction;
     private InputAction _zoomAction;
-    private InputAction _resetAction;
     private InputAction _rotateAction;
 
     private CinemachineVirtualCamera _virtualCamera;
     private Transform _cameraTransform;
-    private Vector3 _initialPosition;
-    private Quaternion _initialRotation;
 
     void Awake()
     {
@@ -45,8 +42,6 @@ public class CameraControl : MonoBehaviour
             return;
         }
         _cameraTransform = _virtualCamera.VirtualCameraGameObject.transform;
-        _initialPosition = _cameraTransform.position;
-        _initialRotation = _cameraTransform.rotation;
     }
 
     private void OnEnable() 
@@ -62,10 +57,6 @@ public class CameraControl : MonoBehaviour
         _zoomAction = _cameraInputActions.CameraControls.Zoom;
         _zoomAction.Enable();
         
-        _resetAction = _cameraInputActions.CameraControls.Reset;
-        _resetAction.Enable();
-        _resetAction.performed += ResetCamera;
-
         _rotateAction = _cameraInputActions.CameraControls.Rotate;
         _rotateAction.Enable();
     }
@@ -76,8 +67,6 @@ public class CameraControl : MonoBehaviour
         _fastPanAction.performed -= ToggleFastPan;
         _fastPanAction.Disable();
         _zoomAction.Disable();
-        _resetAction.performed -= ResetCamera;
-        _resetAction.Disable();
         _rotateAction.Disable();
     }
 
@@ -151,12 +140,5 @@ public class CameraControl : MonoBehaviour
     {
         Vector3 targetRotation = new Vector3(_cameraTransform.eulerAngles.x, _cameraTransform.eulerAngles.y + rotateY, _cameraTransform.eulerAngles.z);
         _cameraTransform.eulerAngles = Vector3.Lerp(_cameraTransform.eulerAngles, targetRotation, _rotationSpeed * Time.deltaTime);
-    }
-
-    private void ResetCamera(InputAction.CallbackContext context)
-    {
-        // instant transition feels better than lerp for resetting
-        _cameraTransform.position = _initialPosition;
-        _cameraTransform.rotation = _initialRotation;
     }
 }
