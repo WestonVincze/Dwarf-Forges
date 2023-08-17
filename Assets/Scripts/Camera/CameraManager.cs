@@ -1,4 +1,6 @@
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraManager : MonoBehaviour
 {
@@ -38,13 +40,14 @@ public class CameraManager : MonoBehaviour
     {
         _cameraInputActions.Enable();
         _cameraInputActions.CameraControls.ToggleCameraLock.performed += _ => ToggleCameraLock();
-        _cameraInputActions.CameraControls.UnlockCamera.performed += _ => SetCameraMode(CameraMode.Free);
+
+        // disable while in free camera mode
+        _cameraInputActions.CameraControls.UnlockCamera.performed += ResetFreeCamera;
     }
 
     private void OnDisable()
     {
-        _cameraInputActions.CameraControls.ToggleCameraLock.performed -= _ => ToggleCameraLock();
-        _cameraInputActions.CameraControls.UnlockCamera.performed -= _ => SetCameraMode(CameraMode.Free);
+        _cameraInputActions.CameraControls.UnlockCamera.performed -= ResetFreeCamera;
         _cameraInputActions.Disable();
     }
 
@@ -53,6 +56,13 @@ public class CameraManager : MonoBehaviour
         _followCamera?.SetActive(activeCameraMode == CameraMode.Follow);
         _freeCamera?.SetActive(activeCameraMode == CameraMode.Free);
         _craftingCamera?.SetActive(activeCameraMode == CameraMode.Crafting);
+    }
+
+    private void ResetFreeCamera(InputAction.CallbackContext context)
+    {
+        _freeCamera.transform.position = _followCamera.transform.position;
+        _freeCamera.transform.rotation = _followCamera.transform.rotation;
+        SetCameraMode(CameraMode.Free);
     }
 
     private void ToggleCameraLock()
@@ -70,6 +80,15 @@ public class CameraManager : MonoBehaviour
     private void SetCameraMode(CameraMode cameraMode)
     {
         if (activeCameraMode == cameraMode) return;
+
+        if (cameraMode == CameraMode.Follow)
+        {
+            _cameraInputActions.CameraControls.UnlockCamera.Enable();
+        }
+        else
+        {
+            _cameraInputActions.CameraControls.UnlockCamera.Disable();
+        }
 
         activeCameraMode = cameraMode;
         if (cameraMode == CameraMode.Follow || cameraMode == CameraMode.Free) previousNormalCameraMode = cameraMode;

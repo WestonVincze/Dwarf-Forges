@@ -78,7 +78,7 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
                     ""id"": ""8f5348de-a1b4-43ee-8371-b506a7cf7d97"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
-                    ""interactions"": ""Hold(duration=0.3)"",
+                    ""interactions"": ""Hold"",
                     ""initialStateCheck"": false
                 }
             ],
@@ -258,6 +258,39 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""UnlockCamera"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""ScrollY"",
+                    ""id"": ""848978e3-d197-4d05-a320-f8f1d585c9a2"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": ""Hold(duration=1.401298E-45)"",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""fb61d73d-8176-4e85-bd88-b642ff1d0ffe"",
+                    ""path"": ""<Mouse>/scroll/down"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""51f37588-6cab-4be5-913e-cdf25e89bfea"",
+                    ""path"": ""<Mouse>/scroll/up"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         }
