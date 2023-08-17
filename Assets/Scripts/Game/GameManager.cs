@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -6,35 +8,37 @@ public class GameManager : MonoBehaviour
     private bool _isPaused;
 
     // TODO: default mode should be main menu
-    private GameMode _currentGameMode = GameMode.LockedCamera;
+    private GameMode _currentGameMode = GameMode.Normal;
     public GameMode currentGameMode
     {
         get { return _currentGameMode; }
     }
 
-    public GameMode defaultGameMode = GameMode.LockedCamera;
+    public GameMode defaultGameMode = GameMode.Normal;
     public enum GameMode
     {
         MainMenu,       // main menu UI is displayed
         Tutorial,       // before the first dwarf is spawned
-        LockedCamera,   // regular gameplay with free camera control 
-        FreeCamera,     // regular gameplay with locked camera on forge
+        Normal,         // normal gameplay
         Crafting,       // crafting mode enabled with locked camera on crafting table
         StatReview,     // after a weapon is forged the game is paused and weapon stats are displayed to player
         PauseMenu,      // game is paused with pause menu UI displayed
     }
 
-    // Crafting mode variables
-    [SerializeField]
-    private GameObject _craftingCamera; // GameObject because we only need to enable/disable
+    public Dictionary<GameMode, Action> enterActions = new Dictionary<GameMode, Action>();
+    public Dictionary<GameMode, Action> exitActions = new Dictionary<GameMode, Action>();
 
-    // LockedCamera mode variables
-    [SerializeField]
-    private GameObject _lockedCamera; // GameObject because we only need to enable/disable
+    private void OnEnable()
+    {
+        enterActions.Add(GameMode.PauseMenu, PauseGame);
+        exitActions.Add(GameMode.PauseMenu, ResumeGame);
+    }
 
-    // FreeCamera mode variables
-    [SerializeField]
-    private GameObject _freeCamera; // GameObject because we only need to enable/disable
+    private void OnDisable()
+    {
+        enterActions.Clear();
+        exitActions.Clear();
+    }
 
     private void Awake()
     {
@@ -43,36 +47,37 @@ public class GameManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
+    public void AddEnterAction(GameMode mode, Action action)
+    {
+        if (enterActions.ContainsKey(mode))
+        {
+            enterActions[mode] += action;
+        }
+        else 
+        {
+            enterActions.Add(mode, action);
+        }
+    }
+
+    public void AddExitAction(GameMode mode, Action action)
+    {
+        if (exitActions.ContainsKey(mode))
+        {
+            exitActions[mode] += action;
+        }
+        else
+        {
+            exitActions.Add(mode, action);
+        }
+    }
+
     public void SetGameMode(GameMode mode)
     {
-        // placeholder switch statement
-        switch (mode)
-        {
-            case GameMode.Tutorial:
-                ResumeGame();
-                break;
-            case GameMode.LockedCamera:
-                ResumeGame();
-                break;
-            case GameMode.FreeCamera:
-                ResumeGame();
-                break;
-            case GameMode.Crafting:
-                ResumeGame();
-                break;
-            case GameMode.StatReview:
-                PauseGame();
-                break;
-            case GameMode.PauseMenu:
-                // TODO: display UI
-                PauseGame();
-                break;
-        }
+        exitActions.TryGetValue(_currentGameMode, out Action exitAction);
+        exitAction?.Invoke();
 
-        // TODO: camera manager?
-        _lockedCamera.SetActive(mode == GameMode.LockedCamera);
-        _freeCamera.SetActive(mode == GameMode.FreeCamera);
-        _craftingCamera.SetActive(mode == GameMode.Crafting);
+        enterActions.TryGetValue(mode, out Action enterAction);
+        enterAction?.Invoke();
 
         _currentGameMode = mode;
     }
@@ -86,18 +91,6 @@ public class GameManager : MonoBehaviour
         else
         {
             SetGameMode(mode);
-        }
-    }
-
-    public void ToggleCameraLock()
-    {
-        if (_currentGameMode == GameMode.LockedCamera)
-        {
-            SetGameMode(GameMode.FreeCamera);
-        }
-        else if (_currentGameMode == GameMode.FreeCamera)
-        {
-            SetGameMode(GameMode.LockedCamera);
         }
     }
 

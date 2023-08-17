@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -7,13 +5,11 @@ using UnityEngine.InputSystem;
  * Handles inputs and actions related to direct player control within the game
  * (switching game modes, drag/drop, etc)
  */
-
-public class PlayerController : MonoBehaviour
+public class PlayerManager: MonoBehaviour
 {
     private PlayerInputActions _playerInputActions;
     private InputAction _craftingModeAction;
     private InputAction _pauseMenuAction;
-    private InputAction _cameraLockAction;
 
     private void Awake()
     {
@@ -29,16 +25,11 @@ public class PlayerController : MonoBehaviour
         _pauseMenuAction = _playerInputActions.GameControls.PauseMenu;
         _pauseMenuAction.Enable();
         _pauseMenuAction.performed += togglePauseMenu => GameManager.instance.ToggleGameMode(GameManager.GameMode.PauseMenu);
-
-        _cameraLockAction = _playerInputActions.GameControls.CameraLock;
-        _cameraLockAction.Enable();
-        _cameraLockAction.performed += toggleCameraLock => GameManager.instance.ToggleCameraLock();
     }
 
     private void OnDisable()
     {
         _craftingModeAction.Disable();
         _pauseMenuAction.Disable();
-        _cameraLockAction.Disable();
     }
 }

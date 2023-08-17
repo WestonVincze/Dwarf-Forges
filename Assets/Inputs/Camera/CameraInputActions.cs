@@ -62,6 +62,24 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""ToggleCameraLock"",
+                    ""type"": ""Button"",
+                    ""id"": ""98790847-03fd-4163-a864-4b9d0e5f6d16"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""UnlockCamera"",
+                    ""type"": ""Button"",
+                    ""id"": ""8f5348de-a1b4-43ee-8371-b506a7cf7d97"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": ""Hold(duration=0.3)"",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -174,6 +192,72 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Rotate"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9d8a33b8-e566-4dd0-8184-735b20b045ea"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ToggleCameraLock"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fb9de72-23d6-48b9-aa4f-c500866bbf24"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""30e62f14-49d9-4e68-81a5-980b8b22de79"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7a7ae599-c995-4d29-bd89-fca128158aa9"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19bd063a-9041-457f-a5d0-4e35e2873fc0"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5b298f4b-30df-45d7-a304-ee571397688f"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""UnlockCamera"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -186,6 +270,8 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
         m_CameraControls_FastPan = m_CameraControls.FindAction("FastPan", throwIfNotFound: true);
         m_CameraControls_Zoom = m_CameraControls.FindAction("Zoom", throwIfNotFound: true);
         m_CameraControls_Rotate = m_CameraControls.FindAction("Rotate", throwIfNotFound: true);
+        m_CameraControls_ToggleCameraLock = m_CameraControls.FindAction("ToggleCameraLock", throwIfNotFound: true);
+        m_CameraControls_UnlockCamera = m_CameraControls.FindAction("UnlockCamera", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +337,8 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_CameraControls_FastPan;
     private readonly InputAction m_CameraControls_Zoom;
     private readonly InputAction m_CameraControls_Rotate;
+    private readonly InputAction m_CameraControls_ToggleCameraLock;
+    private readonly InputAction m_CameraControls_UnlockCamera;
     public struct CameraControlsActions
     {
         private @CameraInputActions m_Wrapper;
@@ -259,6 +347,8 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
         public InputAction @FastPan => m_Wrapper.m_CameraControls_FastPan;
         public InputAction @Zoom => m_Wrapper.m_CameraControls_Zoom;
         public InputAction @Rotate => m_Wrapper.m_CameraControls_Rotate;
+        public InputAction @ToggleCameraLock => m_Wrapper.m_CameraControls_ToggleCameraLock;
+        public InputAction @UnlockCamera => m_Wrapper.m_CameraControls_UnlockCamera;
         public InputActionMap Get() { return m_Wrapper.m_CameraControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -280,6 +370,12 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
             @Rotate.started += instance.OnRotate;
             @Rotate.performed += instance.OnRotate;
             @Rotate.canceled += instance.OnRotate;
+            @ToggleCameraLock.started += instance.OnToggleCameraLock;
+            @ToggleCameraLock.performed += instance.OnToggleCameraLock;
+            @ToggleCameraLock.canceled += instance.OnToggleCameraLock;
+            @UnlockCamera.started += instance.OnUnlockCamera;
+            @UnlockCamera.performed += instance.OnUnlockCamera;
+            @UnlockCamera.canceled += instance.OnUnlockCamera;
         }
 
         private void UnregisterCallbacks(ICameraControlsActions instance)
@@ -296,6 +392,12 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
             @Rotate.started -= instance.OnRotate;
             @Rotate.performed -= instance.OnRotate;
             @Rotate.canceled -= instance.OnRotate;
+            @ToggleCameraLock.started -= instance.OnToggleCameraLock;
+            @ToggleCameraLock.performed -= instance.OnToggleCameraLock;
+            @ToggleCameraLock.canceled -= instance.OnToggleCameraLock;
+            @UnlockCamera.started -= instance.OnUnlockCamera;
+            @UnlockCamera.performed -= instance.OnUnlockCamera;
+            @UnlockCamera.canceled -= instance.OnUnlockCamera;
         }
 
         public void RemoveCallbacks(ICameraControlsActions instance)
@@ -319,5 +421,7 @@ public partial class @CameraInputActions: IInputActionCollection2, IDisposable
         void OnFastPan(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
         void OnRotate(InputAction.CallbackContext context);
+        void OnToggleCameraLock(InputAction.CallbackContext context);
+        void OnUnlockCamera(InputAction.CallbackContext context);
     }
 }

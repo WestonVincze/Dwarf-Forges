@@ -2,7 +2,7 @@ using UnityEngine.InputSystem;
 using UnityEngine;
 using Cinemachine;
 
-public class CameraControl : MonoBehaviour
+public class FreeCameraController : MonoBehaviour
 {
     [SerializeField]
     private float _panSpeed = 15f;
@@ -11,15 +11,15 @@ public class CameraControl : MonoBehaviour
     [SerializeField] 
     private float _zoomSpeed = 100f;
     [SerializeField]
-    private float _minPositionY = 2f;
+    private float _minPositionY = 4f;
     [SerializeField]
-    private float _maxPositionY = 17f;
+    private float _maxPositionY = 12f;
     [SerializeField] 
     private float _rotationSpeed = 100f;
     [SerializeField]
-    private float _minRotationX = 20f;
+    private float _minRotationX = 25f;
     [SerializeField]
-    private float _maxRotationX = 50f;
+    private float _maxRotationX = 45f;
 
     private bool _fastPanActive = false;
 
@@ -90,6 +90,7 @@ public class CameraControl : MonoBehaviour
 
     private void CheckZoom()
     {
+        // we might want to change this to zoom based on camera direction
         float zoomInput = _zoomAction.ReadValue<float>();
 
         if (zoomInput == 0) return;
