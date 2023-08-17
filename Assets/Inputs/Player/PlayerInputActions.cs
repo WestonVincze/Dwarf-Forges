@@ -46,9 +46,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""CameraLock"",
+                    ""name"": ""Interact"",
                     ""type"": ""Button"",
-                    ""id"": ""fe8961fb-ad88-46a6-b045-cf2a20b32c9c"",
+                    ""id"": ""60c19b2b-2828-4043-8d0c-35a6a7d99199"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -80,12 +80,12 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""8b2e5d82-1a4f-4c78-a9bf-e4f7e737e738"",
-                    ""path"": ""<Keyboard>/space"",
+                    ""id"": ""1d22957a-192d-4a40-b8a6-698e0b807e3f"",
+                    ""path"": ""<Mouse>/leftButton"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""CameraLock"",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -98,7 +98,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_GameControls = asset.FindActionMap("GameControls", throwIfNotFound: true);
         m_GameControls_CraftingMode = m_GameControls.FindAction("CraftingMode", throwIfNotFound: true);
         m_GameControls_PauseMenu = m_GameControls.FindAction("PauseMenu", throwIfNotFound: true);
-        m_GameControls_CameraLock = m_GameControls.FindAction("CameraLock", throwIfNotFound: true);
+        m_GameControls_Interact = m_GameControls.FindAction("Interact", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -162,14 +162,14 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private List<IGameControlsActions> m_GameControlsActionsCallbackInterfaces = new List<IGameControlsActions>();
     private readonly InputAction m_GameControls_CraftingMode;
     private readonly InputAction m_GameControls_PauseMenu;
-    private readonly InputAction m_GameControls_CameraLock;
+    private readonly InputAction m_GameControls_Interact;
     public struct GameControlsActions
     {
         private @PlayerInputActions m_Wrapper;
         public GameControlsActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
         public InputAction @CraftingMode => m_Wrapper.m_GameControls_CraftingMode;
         public InputAction @PauseMenu => m_Wrapper.m_GameControls_PauseMenu;
-        public InputAction @CameraLock => m_Wrapper.m_GameControls_CameraLock;
+        public InputAction @Interact => m_Wrapper.m_GameControls_Interact;
         public InputActionMap Get() { return m_Wrapper.m_GameControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -185,9 +185,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @PauseMenu.started += instance.OnPauseMenu;
             @PauseMenu.performed += instance.OnPauseMenu;
             @PauseMenu.canceled += instance.OnPauseMenu;
-            @CameraLock.started += instance.OnCameraLock;
-            @CameraLock.performed += instance.OnCameraLock;
-            @CameraLock.canceled += instance.OnCameraLock;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         private void UnregisterCallbacks(IGameControlsActions instance)
@@ -198,9 +198,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @PauseMenu.started -= instance.OnPauseMenu;
             @PauseMenu.performed -= instance.OnPauseMenu;
             @PauseMenu.canceled -= instance.OnPauseMenu;
-            @CameraLock.started -= instance.OnCameraLock;
-            @CameraLock.performed -= instance.OnCameraLock;
-            @CameraLock.canceled -= instance.OnCameraLock;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         public void RemoveCallbacks(IGameControlsActions instance)
@@ -222,6 +222,6 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     {
         void OnCraftingMode(InputAction.CallbackContext context);
         void OnPauseMenu(InputAction.CallbackContext context);
-        void OnCameraLock(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
 }

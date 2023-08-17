@@ -24,9 +24,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "CameraLock",
+                    "name": "Interact",
                     "type": "Button",
-                    "id": "fe8961fb-ad88-46a6-b045-cf2a20b32c9c",
+                    "id": "60c19b2b-2828-4043-8d0c-35a6a7d99199",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -58,12 +58,12 @@
                 },
                 {
                     "name": "",
-                    "id": "8b2e5d82-1a4f-4c78-a9bf-e4f7e737e738",
-                    "path": "<Keyboard>/space",
+                    "id": "1d22957a-192d-4a40-b8a6-698e0b807e3f",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "CameraLock",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

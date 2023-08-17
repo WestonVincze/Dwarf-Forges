@@ -690,6 +690,7 @@ GameObject:
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
   - component: {fileID: 963194229}
+  - component: {fileID: 963194230}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -805,6 +806,22 @@ MonoBehaviour:
   m_CameraActivatedEvent:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &963194230
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 963194225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c49b4cc203aa6414fae5c798d1d0e7d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EventMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_MaxRayIntersections: 0
 --- !u!1 &1054565995
 GameObject:
   m_ObjectHideFlags: 0
@@ -1117,6 +1134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9a5ba2d5ac4dd149a51dde8314586c7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _camera: {fileID: 963194227}
 --- !u!4 &1927000027 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3630984402490735787, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
@@ -1164,9 +1182,41 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2004379584}
     m_Modifications:
+    - target: {fileID: 807139669912246487, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736371740382343673, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Size.x
+      value: 1.896738
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736371740382343673, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Size.y
+      value: 0.61129034
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736371740382343673, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Size.z
+      value: 1.3469787
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736371740382343673, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Center.x
+      value: 0.027165413
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736371740382343673, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Center.y
+      value: -0.07912576
+      objectReference: {fileID: 0}
+    - target: {fileID: 1736371740382343673, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Center.z
+      value: -0.02207804
+      objectReference: {fileID: 0}
     - target: {fileID: 2050224463433330303, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
       propertyPath: m_Name
       value: Forge
+      objectReference: {fileID: 0}
+    - target: {fileID: 2370589975872791578, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 3630984402490735787, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
       propertyPath: m_RootOrder
