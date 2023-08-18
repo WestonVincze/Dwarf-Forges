@@ -11,15 +11,20 @@ public class TorqueController : MonoBehaviour
     public float tweenSpeed = 0.05f;  // Speed of the tweening effect
 
     private Rigidbody rb;
+    public InputDecoupler_TorqueController inputDecoupler;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        inputDecoupler = GetComponent<InputDecoupler_TorqueController>();
+
+        if(inputDecoupler == null)
+            inputDecoupler = new InputDecoupler_TorqueController();
     }
 
     void FixedUpdate()
     {
-        ApplyTorque();
+        ApplyTorque(inputDecoupler.GetInputStates());
         TweenReferenceForward();
     }
 
@@ -35,7 +40,7 @@ public class TorqueController : MonoBehaviour
         return transform.forward * Mathf.Sign(localDir.z);
     }
 
-    void ApplyTorque()
+    void ApplyTorque(InputDecoupler_TorqueController.InputStates inputStates)
     {
         Vector3 yawAxis = ClosestLocalAxis(referenceTransform.up);
         Vector3 pitchAxis = ClosestLocalAxis(referenceTransform.forward);
@@ -43,29 +48,27 @@ public class TorqueController : MonoBehaviour
 
         Vector3 torque = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.W))
+        if (inputStates.W)
             torque += torqueStrength.x * pitchAxis;
-        if (Input.GetKey(KeyCode.S))
+        if (inputStates.S)
             torque -= torqueStrength.x * pitchAxis;
-
-        if (Input.GetKey(KeyCode.A))
+        if (inputStates.A)
             torque += torqueStrength.z * rollAxis;
-        if (Input.GetKey(KeyCode.D))
+        if (inputStates.D)
             torque -= torqueStrength.z * rollAxis;
-
-        if (Input.GetKey(KeyCode.Q))
+        if (inputStates.Q)
             torque -= torqueStrength.y * yawAxis;
-        if (Input.GetKey(KeyCode.E))
+        if (inputStates.E)
             torque += torqueStrength.y * yawAxis;
 
         rb.AddTorque(torque);
 
-        if (Input.GetKeyDown(KeyCode.Q) && Time.time >= nextImpulseTime)
+        if (inputStates.QDown && Time.time >= nextImpulseTime)
         {
             rb.AddTorque(-impulseStrength * yawAxis, ForceMode.Impulse);
             nextImpulseTime = Time.time + impulseCooldown;
         }
-        else if (Input.GetKeyDown(KeyCode.E) && Time.time >= nextImpulseTime)
+        else if (inputStates.EDown && Time.time >= nextImpulseTime)
         {
             rb.AddTorque(impulseStrength * yawAxis, ForceMode.Impulse);
             nextImpulseTime = Time.time + impulseCooldown;
@@ -76,5 +79,31 @@ public class TorqueController : MonoBehaviour
     {
         Vector3 targetDirection = ClosestLocalAxis(referenceTransform.forward);
         referenceTransform.forward = Vector3.Slerp(referenceTransform.forward, targetDirection, tweenSpeed);
+    }
+
+    // Subclass definition
+    public class InputDecoupler_TorqueController : MonoBehaviour
+    {
+        public struct InputStates
+        {
+            public bool W, S, A, D, Q, E;
+            public bool QDown, EDown;
+        }
+
+        virtual public InputStates GetInputStates()
+        {
+            InputStates states;
+
+            states.W = Input.GetKey(KeyCode.W);
+            states.S = Input.GetKey(KeyCode.S);
+            states.A = Input.GetKey(KeyCode.A);
+            states.D = Input.GetKey(KeyCode.D);
+            states.Q = Input.GetKey(KeyCode.Q);
+            states.E = Input.GetKey(KeyCode.E);
+            states.QDown = Input.GetKeyDown(KeyCode.Q);
+            states.EDown = Input.GetKeyDown(KeyCode.E);
+
+            return states;
+        }
     }
 }

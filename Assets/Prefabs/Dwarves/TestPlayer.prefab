@@ -100,9 +100,8 @@ GameObject:
   - component: {fileID: 479533637409337538}
   - component: {fileID: 2036885614704883949}
   - component: {fileID: 9178763710267140258}
-  - component: {fileID: 3318093275945387972}
   m_Layer: 0
-  m_Name: BoxRollStepDwarf
+  m_Name: TestPlayer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -275,20 +274,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxHealth: 100
---- !u!114 &3318093275945387972
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6198896710538868493}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 77bf415161a0d28429d44b7dd8d567fd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  localTransform: {fileID: 2509000321643738103}
 --- !u!1 &6448840657792795528
 GameObject:
   m_ObjectHideFlags: 0
