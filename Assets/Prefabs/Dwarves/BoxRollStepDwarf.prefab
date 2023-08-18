@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 339132814517203152}
   - component: {fileID: 479533637409337538}
   - component: {fileID: 2036885614704883949}
+  - component: {fileID: 9178763710267140258}
   m_Layer: 0
   m_Name: BoxRollStepDwarf
   m_TagString: Untagged
@@ -259,6 +260,19 @@ MonoBehaviour:
   impulseCooldown: 0.2
   referenceTransform: {fileID: 2509000321643738103}
   tweenSpeed: 0.05
+--- !u!114 &9178763710267140258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6198896710538868493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5647d11ef08bc4842a5a72a3c398efad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 100
 --- !u!1 &6448840657792795528
 GameObject:
   m_ObjectHideFlags: 0
@@ -270,7 +284,6 @@ GameObject:
   - component: {fileID: 279259638111728090}
   - component: {fileID: 7579155524623934804}
   - component: {fileID: 6961636276580645044}
-  - component: {fileID: 5916931179554285131}
   m_Layer: 0
   m_Name: Imposter
   m_TagString: Untagged
@@ -343,24 +356,3 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &5916931179554285131
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6448840657792795528}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
