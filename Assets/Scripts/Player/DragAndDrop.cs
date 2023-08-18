@@ -1,12 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
-using Cinemachine;
 
 public class DragAndDrop : MonoBehaviour
 {
-    //Enums
     private enum GRAB_TYPE
     {
         NONE,
@@ -25,50 +21,48 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private GRAB_TYPE grabType;
     [SerializeField] private GRAB_STATE grabState;
 
-    //LayerMasks
     [Header("LayerMasks")]
     [SerializeField] private LayerMask playAreaLayerMask;
     [SerializeField] private LayerMask craftingLayerMask;
     [SerializeField] private LayerMask ignoredLayerMask;
 
-    //Tags
+    private int originalLayer;
+
     [SerializeField] private string playAreaTag;
     [SerializeField] private string craftingTag;
 
-    private int previousLayer; //Stores the layer of the gameobject that is grabbed so that it can be changed back when object is dropped
+    private int previousLayer;
 
-    //Materials
     [Header("Materials")]
     [SerializeField] private Material highlightedMaterial;
     [SerializeField] private Material grabbedMaterial;
 
+    [Header("Movement")]
+    [SerializeField] private float heightOffset;
+    [SerializeField] private float lerpAmount;
+
     private GameObject selectedGameObject;
-
     private Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
-    List<Transform> childObjects = new List<Transform>();
+    private Dictionary<Transform, int> originalLayers = new Dictionary<Transform, int>();
+    private List<Transform> childObjects = new List<Transform>();
 
-    void Update()
+    private void Update()
     {
         if (grabType != GRAB_TYPE.NONE)
         {
-            //Create Raycast
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             Debug.DrawRay(ray.origin, ray.direction * 100.0f);
 
-            //Check Raycast
-
-            //If The Player Is Empty Handed Check For Raycast To Highlight Objects
             if (grabState == GRAB_STATE.EMPTY_HANDED)
             {
-                if (grabType == GRAB_TYPE.PLAY_AREA_GRAB) //Check Raycast With Play Area LayerMask
+                if (grabType == GRAB_TYPE.PLAY_AREA_GRAB)
                 {
                     if (Physics.Raycast(ray, out hit, 100.0f, playAreaLayerMask))
                     {
-                        //Checks For Play Area Selectable Gameobjects
                         selectedGameObject = FindParentObject(hit.transform, playAreaTag).gameObject;
-                        if(selectedGameObject != null)
+                        if (selectedGameObject != null)
                             HighlightObject(selectedGameObject.transform);
                     }
                 }
@@ -76,7 +70,6 @@ public class DragAndDrop : MonoBehaviour
                 {
                     if (Physics.Raycast(ray, out hit, 100.0f, craftingLayerMask))
                     {
-                        //Checks For Play Area Selectable Gameobjects
                         selectedGameObject = FindParentObject(hit.transform, craftingTag).gameObject;
                         if (selectedGameObject != null)
                             HighlightObject(selectedGameObject.transform);
@@ -85,6 +78,11 @@ public class DragAndDrop : MonoBehaviour
             }
             else if (grabState == GRAB_STATE.HIGHLIGHTED)
             {
+                if (Input.GetMouseButtonDown(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
+                {
+                    PickUpItem();
+                }
+
                 if (Physics.Raycast(ray, out hit))
                 {
                     bool _sameObject = false;
@@ -105,47 +103,96 @@ public class DragAndDrop : MonoBehaviour
                         }
                     }
 
-                    if (!_sameObject)
+                    if (!_sameObject && selectedGameObject)
                     {
-                        if(selectedGameObject)
-                            UnHighlightObject(selectedGameObject.transform);
+                        UnHighlightObject(selectedGameObject.transform);
                     }
+                }
+            }
+            else if (grabState == GRAB_STATE.GRABBED)
+            {
+                MoveToCursor();
+
+                if (Input.GetMouseButtonUp(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
+                {
+                    DropItem();
                 }
             }
         }
     }
 
-    void HighlightObject(Transform _parentObject)
+    private void HighlightObject(Transform _parentObject)
     {
-        //Find All Child Objects From The Parent Object
+        ChangeAllMaterialsOfParentObject(_parentObject, highlightedMaterial, true);
+        grabState = GRAB_STATE.HIGHLIGHTED;
+    }
+
+    private void UnHighlightObject(Transform _parentObject)
+    {
+        RestoreOriginalMaterials();
+        originalMaterials.Clear();
+        selectedGameObject = null;
+        grabState = GRAB_STATE.EMPTY_HANDED;
+    }
+
+    private void PickUpItem()
+    {
+        ChangeAllMaterialsOfParentObject(selectedGameObject.transform, grabbedMaterial, false);
+        ChangeAllLayersOfParentObject(selectedGameObject.transform);
+        if (selectedGameObject.GetComponent<Rigidbody>())
+        {
+            selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
+        }
+        grabState = GRAB_STATE.GRABBED;
+    }
+
+    private void DropItem()
+    {
+        RestoreOriginalMaterials();
+        RestoreOriginalLayers();
+        if (selectedGameObject.GetComponent<Rigidbody>())
+        {
+            selectedGameObject.GetComponent<Rigidbody>().isKinematic = false;
+        }
+        grabState = GRAB_STATE.EMPTY_HANDED;
+    }
+
+    private void MoveToCursor() //TODO: CHANGE THE MOVEMENT TO USE RIGIDBODY WITH PID CONTROLLER
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 100.0f, ~ignoredLayerMask))
+        {
+            Vector3 newPosition = new Vector3(hit.point.x, hit.point.y + heightOffset, hit.point.z);
+            selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+        }
+    }
+
+    private void ChangeAllMaterialsOfParentObject(Transform _parentObject, Material _material, bool _storeCurrentMaterial)
+    {
         childObjects = GetAllChildObjects(_parentObject);
 
         if (_parentObject.GetComponent<MeshRenderer>())
         {
-            originalMaterials[_parentObject] = _parentObject.GetComponent<MeshRenderer>().material;
-            _parentObject.GetComponent<MeshRenderer>().material = highlightedMaterial;
+            if (_storeCurrentMaterial)
+                originalMaterials[_parentObject] = _parentObject.GetComponent<MeshRenderer>().material;
+            _parentObject.GetComponent<MeshRenderer>().material = _material;
         }
 
-        //Check Each Child For MeshRenderers
         foreach (Transform child in childObjects)
         {
             MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
-
             if (meshRenderer)
             {
-                //Store The Childs Original Material
-                originalMaterials[child] = meshRenderer.material;
-
-                //Change Childs Material To Highlight
-                meshRenderer.material = highlightedMaterial;
+                if (_storeCurrentMaterial)
+                    originalMaterials[child] = meshRenderer.material;
+                meshRenderer.material = _material;
             }
         }
-
-        //Change Grab State
-        grabState = GRAB_STATE.HIGHLIGHTED;
     }
 
-    void UnHighlightObject(Transform _parentObject)
+    private void RestoreOriginalMaterials()
     {
         foreach (var kvp in originalMaterials)
         {
@@ -155,20 +202,46 @@ public class DragAndDrop : MonoBehaviour
                 meshRenderer.material = kvp.Value;
             }
         }
-
-        originalMaterials.Clear();
-
-        selectedGameObject = null;
-        grabState = GRAB_STATE.EMPTY_HANDED;
     }
 
-    //Functions To Select Every Object Connected To Selected Object (Child Objects) To Be Able To Change Materials
-    Transform FindParentObject(Transform _childObject, string _tag)
+    private void ChangeAllLayersOfParentObject(Transform _parentObject)
     {
-        //If the child object already has the parent tag, use child object
+        childObjects = GetAllChildObjects(_parentObject);
+        int newLayer = (int)Mathf.Log(ignoredLayerMask.value, 2);
+
+        if (_parentObject.GetComponent<Collider>())
+        {
+            originalLayers[_parentObject] = _parentObject.gameObject.layer;
+            _parentObject.gameObject.layer = newLayer;
+        }
+
+        foreach (Transform child in childObjects)
+        {
+            Collider collider = child.GetComponent<Collider>();
+            if (collider)
+            {
+                originalLayers[child] = child.gameObject.layer;
+                child.gameObject.layer = newLayer;
+            }
+        }
+    }
+
+    private void RestoreOriginalLayers()
+    {
+        foreach (var kvp in originalLayers)
+        {
+            Collider collider = kvp.Key.GetComponent<Collider>();
+            if (collider != null)
+            {
+                kvp.Key.gameObject.layer = kvp.Value;
+            }
+        }
+    }
+
+    private Transform FindParentObject(Transform _childObject, string _tag)
+    {
         if (_childObject.tag == _tag)
             return _childObject;
-
 
         Transform parent = _childObject.parent;
 
@@ -178,7 +251,6 @@ public class DragAndDrop : MonoBehaviour
             {
                 return parent;
             }
-
             parent = parent.parent;
         }
 
@@ -188,14 +260,11 @@ public class DragAndDrop : MonoBehaviour
     private List<Transform> GetAllChildObjects(Transform parent)
     {
         List<Transform> childList = new List<Transform>();
-
-        // Iterate through each child of the current parent
         foreach (Transform child in parent)
         {
-            childList.Add(child); // Add the child to the list
-            childList.AddRange(GetAllChildObjects(child)); // Recursively get children of the child
+            childList.Add(child);
+            childList.AddRange(GetAllChildObjects(child));
         }
-
         return childList;
     }
 }
