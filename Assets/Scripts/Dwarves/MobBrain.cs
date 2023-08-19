@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
 using static TorqueController;
 
-public class MobBrain : InputDecoupler_TorqueController
+public class MobBrain : InputHandler
 {
     // Target to move towards.
     public Transform target;
@@ -28,7 +28,7 @@ public class MobBrain : InputDecoupler_TorqueController
         InputStates states;
 
         Vector3 directionToTarget = target.position - localTransform.position;
-        float angleToTarget = Vector3.SignedAngle(-localTransform.right, directionToTarget, localTransform.up);
+        float angleToTarget = Vector3.SignedAngle(localTransform.forward, directionToTarget, localTransform.up);
 
         // "Think" about yaw direction.
         states.E = angleToTarget > YawThreshold;  // yawLeft

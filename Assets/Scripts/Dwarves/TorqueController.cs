@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(InputHandler))]
 public class TorqueController : MonoBehaviour
 {
     public Vector3 torqueStrength = new Vector3(5.0f, 7.0f, 5.0f);
@@ -11,20 +12,17 @@ public class TorqueController : MonoBehaviour
     public float tweenSpeed = 0.05f;  // Speed of the tweening effect
 
     private Rigidbody rb;
-    public InputDecoupler_TorqueController inputDecoupler;
+    private InputHandler inputHandler;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        inputDecoupler = GetComponent<InputDecoupler_TorqueController>();
-
-        if(inputDecoupler == null)
-            inputDecoupler = new InputDecoupler_TorqueController();
+        inputHandler = GetComponent<InputHandler>();
     }
 
     void FixedUpdate()
     {
-        ApplyTorque(inputDecoupler.GetInputStates());
+        ApplyTorque(inputHandler.GetInputStates());
         TweenReferenceForward();
     }
 
@@ -40,22 +38,22 @@ public class TorqueController : MonoBehaviour
         return transform.forward * Mathf.Sign(localDir.z);
     }
 
-    void ApplyTorque(InputDecoupler_TorqueController.InputStates inputStates)
+    void ApplyTorque(InputHandler.InputStates inputStates)
     {
         Vector3 yawAxis = ClosestLocalAxis(referenceTransform.up);
-        Vector3 pitchAxis = ClosestLocalAxis(referenceTransform.forward);
-        Vector3 rollAxis = ClosestLocalAxis(referenceTransform.right);
+        Vector3 pitchAxis = ClosestLocalAxis(referenceTransform.right);
+        Vector3 rollAxis = ClosestLocalAxis(referenceTransform.forward);
 
         Vector3 torque = Vector3.zero;
 
         if (inputStates.W)
-            torque += torqueStrength.x * pitchAxis;
+            torque += torqueStrength.z * pitchAxis;
         if (inputStates.S)
-            torque -= torqueStrength.x * pitchAxis;
+            torque -= torqueStrength.z * pitchAxis;
         if (inputStates.A)
-            torque += torqueStrength.z * rollAxis;
+            torque += torqueStrength.x * rollAxis;
         if (inputStates.D)
-            torque -= torqueStrength.z * rollAxis;
+            torque -= torqueStrength.x * rollAxis;
         if (inputStates.Q)
             torque -= torqueStrength.y * yawAxis;
         if (inputStates.E)
@@ -79,31 +77,5 @@ public class TorqueController : MonoBehaviour
     {
         Vector3 targetDirection = ClosestLocalAxis(referenceTransform.forward);
         referenceTransform.forward = Vector3.Slerp(referenceTransform.forward, targetDirection, tweenSpeed);
-    }
-
-    // Subclass definition
-    public class InputDecoupler_TorqueController : MonoBehaviour
-    {
-        public struct InputStates
-        {
-            public bool W, S, A, D, Q, E;
-            public bool QDown, EDown;
-        }
-
-        virtual public InputStates GetInputStates()
-        {
-            InputStates states;
-
-            states.W = Input.GetKey(KeyCode.W);
-            states.S = Input.GetKey(KeyCode.S);
-            states.A = Input.GetKey(KeyCode.A);
-            states.D = Input.GetKey(KeyCode.D);
-            states.Q = Input.GetKey(KeyCode.Q);
-            states.E = Input.GetKey(KeyCode.E);
-            states.QDown = Input.GetKeyDown(KeyCode.Q);
-            states.EDown = Input.GetKeyDown(KeyCode.E);
-
-            return states;
-        }
     }
 }

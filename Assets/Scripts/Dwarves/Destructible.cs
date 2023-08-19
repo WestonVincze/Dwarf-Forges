@@ -10,7 +10,7 @@ public class Destructible : MonoBehaviour
     // Actions that can be registered to
     public event Action<float> OnReceiveDamage;
     public event Action<float> OnHeal;
-    public event Action OnDeath;
+    public Action OnDeath;
 
     private void Start()
     {
@@ -45,6 +45,8 @@ public class Destructible : MonoBehaviour
     private void Die()
     {
         OnDeath?.Invoke();
+        OnDeath = null;
+
         // Here you can add additional logic for what happens when the object dies,
         // like playing an animation or destroying the game object.
         Destroy(gameObject);
