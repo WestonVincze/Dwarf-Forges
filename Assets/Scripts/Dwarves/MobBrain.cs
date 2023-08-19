@@ -1,9 +1,16 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem.LowLevel;
 using static TorqueController;
 
 public class MobBrain : InputHandler
 {
+    enum BrainState
+    {
+        Tracking,
+        Pulling
+    }
+    
     // Target to move towards.
     public Transform target;
 
@@ -12,12 +19,38 @@ public class MobBrain : InputHandler
     public float YawThreshold = 5.0f;  // A small angular threshold for yaw direction.
     public float PitchThreshold = 0.5f; // A small distance threshold for pitch direction.
 
-    void Update()
-    {
-        if (target == null) return;
+    private BrainState brainState = BrainState.Tracking;
 
-        // Update the thought process each frame.
-        GetInputStates();
+    private LineRenderer lineRenderer;
+    private SpringJoint rope;
+
+    public void Update()
+    {
+        if(lineRenderer != null)
+        {
+            lineRenderer.SetPosition(0, transform.position);
+            lineRenderer.SetPosition(lineRenderer.positionCount - 1, target.position);
+        }
+    }
+
+    public void TouchSensor_Front(Collider collider)
+    {
+        if (brainState != BrainState.Tracking)
+            return;
+
+        if(collider.transform == target)
+        {
+            rope = gameObject.AddComponent<SpringJoint>();
+            rope.connectedBody = collider.gameObject.GetComponent<Rigidbody>();
+            rope.maxDistance = 3;
+            lineRenderer = gameObject.AddComponent<LineRenderer>();
+            lineRenderer.startWidth = 0.1f;
+            lineRenderer.endWidth = 0.1f;
+            lineRenderer.startColor = Color.black;
+            lineRenderer.endColor = Color.black;
+
+            brainState = BrainState.Pulling;
+        }
     }
 
     public override InputStates GetInputStates()
@@ -27,7 +60,18 @@ public class MobBrain : InputHandler
 
         InputStates states;
 
-        Vector3 directionToTarget = target.position - localTransform.position;
+        Vector3 targetPos;
+
+        if(brainState == BrainState.Tracking)
+        {
+            targetPos = target.position;
+        }
+        else// if(brainState == BrainState.Pulling)
+        {
+            targetPos = new Vector3(transform.position.x, transform.position.y, 1000);
+        }
+
+        Vector3 directionToTarget = targetPos - localTransform.position;
         float angleToTarget = Vector3.SignedAngle(localTransform.forward, directionToTarget, localTransform.up);
 
         // "Think" about yaw direction.

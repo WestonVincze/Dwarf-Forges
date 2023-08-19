@@ -9,7 +9,7 @@ public class TorqueController : MonoBehaviour
     public float impulseCooldown = 0.2f;
     private float nextImpulseTime = 0f;
     public Transform referenceTransform;
-    public float tweenSpeed = 0.05f;  // Speed of the tweening effect
+    public float tweenSpeed = 0.05f;
 
     private Rigidbody rb;
     private InputHandler inputHandler;
@@ -17,6 +17,7 @@ public class TorqueController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.maxAngularVelocity = 10;
         inputHandler = GetComponent<InputHandler>();
     }
 

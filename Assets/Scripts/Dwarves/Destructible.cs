@@ -47,8 +47,8 @@ public class Destructible : MonoBehaviour
         OnDeath?.Invoke();
         OnDeath = null;
 
-        // Here you can add additional logic for what happens when the object dies,
-        // like playing an animation or destroying the game object.
+        //TODO: Implement death visuals. Either spawn in a new object
+        //or delay to the end of the death animation before destroy.
         Destroy(gameObject);
     }
 }
