@@ -62,6 +62,12 @@ public class DragAndDrop : MonoBehaviour
     private Dictionary<Transform, int> originalLayers = new Dictionary<Transform, int>();
     private List<Transform> childObjects = new List<Transform>();
 
+    void Start()
+    {
+        GameManager.instance.AddEnterAction(GameManager.GameMode.Crafting, SetToCraftingMode);
+        GameManager.instance.AddExitAction(GameManager.GameMode.Crafting, SetToPlayAreaMode);
+    }
+
     private void Update()
     {
         if (grabType != GRAB_TYPE.NONE)
@@ -307,5 +313,19 @@ public class DragAndDrop : MonoBehaviour
             childList.AddRange(GetAllChildObjects(child));
         }
         return childList;
+    }
+
+    void SetToCraftingMode()
+    {
+        if (grabState == GRAB_STATE.GRABBED) DropItem();
+
+        grabType = GRAB_TYPE.CRAFTING_GRAB;
+    }
+
+    void SetToPlayAreaMode()
+    {
+        if (grabState == GRAB_STATE.GRABBED) DropItem();
+
+        grabType = GRAB_TYPE.PLAY_AREA_GRAB;
     }
 }
