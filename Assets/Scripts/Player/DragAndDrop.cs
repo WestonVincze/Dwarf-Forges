@@ -1,6 +1,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Instructions On How Drag And Drop Works
+ *
+ * How To Set An Object To Be Draggable:
+ * Step 1: Set the parent object's tag to either have the 'SelectableCraftingParent' or 'SelectablePlayAreaParent'
+ * Step 2: Set the layers of the parent object and all child object's to draggable
+ *
+ * Controls:
+ * Move cursor over object that you want to pick up and drag
+ * When the item is highlighted you can click and hold down the left mouse button to pick it up and drag it around
+ * To drop the grabbed item, release the left mouse button
+ *
+ * Grab Types:
+ * If you want to pick up an object with the SelectableCraftingParent, the grab type has to be set to Crafting Mode
+ * If you want to pick up an object with the SelectablePlayAreaParent, the grab type has to be set to Play Area Mode
+ */
+
 public class DragAndDrop : MonoBehaviour
 {
     private enum GRAB_TYPE
@@ -22,8 +39,7 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private GRAB_STATE grabState;
 
     [Header("LayerMasks")]
-    [SerializeField] private LayerMask playAreaLayerMask;
-    [SerializeField] private LayerMask craftingLayerMask;
+    [SerializeField] private LayerMask draggableLayerMask;
     [SerializeField] private LayerMask ignoredLayerMask;
 
     private int originalLayer;
@@ -55,35 +71,39 @@ public class DragAndDrop : MonoBehaviour
 
             Debug.DrawRay(ray.origin, ray.direction * 100.0f);
 
+            //If the player hasn't highlighted or grabbed an object, check to see if they are over an object that can be selected
             if (grabState == GRAB_STATE.EMPTY_HANDED)
             {
-                if (grabType == GRAB_TYPE.PLAY_AREA_GRAB)
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, draggableLayerMask)) //Raycast to find objects that can be dragged
                 {
-                    if (Physics.Raycast(ray, out hit, 100.0f, playAreaLayerMask))
+                    if (grabType == GRAB_TYPE.PLAY_AREA_GRAB) //Checks if the object is apart of the play area and if the player can grab from the play area
                     {
-                        selectedGameObject = FindParentObject(hit.transform, playAreaTag).gameObject;
-                        if (selectedGameObject != null)
-                            HighlightObject(selectedGameObject.transform);
+                        selectedGameObject = FindParentObject(hit.transform, playAreaTag)?.gameObject;
+
+                        if (selectedGameObject)
+                        {
+                            HighlightObject(selectedGameObject.transform); //If the object is valid, highlight it
+                        }
                     }
-                }
-                else if (grabType == GRAB_TYPE.CRAFTING_GRAB)
-                {
-                    if (Physics.Raycast(ray, out hit, 100.0f, craftingLayerMask))
+                    else if (grabType == GRAB_TYPE.CRAFTING_GRAB) //Checks if the object is apart of crafting and if the player is in crafting mode
                     {
-                        selectedGameObject = FindParentObject(hit.transform, craftingTag).gameObject;
-                        if (selectedGameObject != null)
-                            HighlightObject(selectedGameObject.transform);
+                        selectedGameObject = FindParentObject(hit.transform, craftingTag)?.gameObject;
+
+                        if (selectedGameObject)
+                        {
+                            HighlightObject(selectedGameObject.transform); //If the object is valid, highlight it
+                        }
                     }
                 }
             }
-            else if (grabState == GRAB_STATE.HIGHLIGHTED)
+            else if (grabState == GRAB_STATE.HIGHLIGHTED) //If there is an object that is already highlighted, continue logic
             {
                 if (Input.GetMouseButtonDown(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
                 {
                     PickUpItem();
                 }
 
-                if (Physics.Raycast(ray, out hit))
+                if (Physics.Raycast(ray, out hit)) //Raycast to see if the player's cursor is still on the highlighted object or not
                 {
                     bool _sameObject = false;
 
@@ -105,17 +125,17 @@ public class DragAndDrop : MonoBehaviour
 
                     if (!_sameObject && selectedGameObject)
                     {
-                        UnHighlightObject(selectedGameObject.transform);
+                        UnHighlightObject(selectedGameObject.transform); //If the highlighted object and the object that the cursor is on is not the same, unhighlight the highlighted object
                     }
                 }
             }
-            else if (grabState == GRAB_STATE.GRABBED)
+            else if (grabState == GRAB_STATE.GRABBED) //If the player has an object picked up continue logic
             {
-                MoveToCursor();
+                MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
 
                 if (Input.GetMouseButtonUp(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
                 {
-                    DropItem();
+                    DropItem(); //If they let go of the mouse button, drop the object
                 }
             }
         }
@@ -240,17 +260,38 @@ public class DragAndDrop : MonoBehaviour
 
     private Transform FindParentObject(Transform _childObject, string _tag)
     {
+        string tagToIgnore;
+
+        if (_tag == craftingTag)
+            tagToIgnore = playAreaTag;
+        else
+            tagToIgnore = craftingTag;
+
+
         if (_childObject.tag == _tag)
+        {
             return _childObject;
+        }
+        else if (_childObject.tag == tagToIgnore)
+        {
+            return null;
+        }
 
         Transform parent = _childObject.parent;
 
         while (parent != null)
         {
+
             if (parent.CompareTag(_tag))
             {
                 return parent;
             }
+            else if (parent.CompareTag(tagToIgnore))
+            {
+
+                return null;
+            }
+            
             parent = parent.parent;
         }
 
