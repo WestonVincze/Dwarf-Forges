@@ -56,16 +56,21 @@ public class DragAndDrop : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float heightOffset;
     [SerializeField] private float lerpAmount;
+    [SerializeField] private bool usePIDController;
 
     private GameObject selectedGameObject;
     private Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
     private Dictionary<Transform, int> originalLayers = new Dictionary<Transform, int>();
     private List<Transform> childObjects = new List<Transform>();
 
+    private PIDController pidController;
+
     void Start()
     {
         GameManager.instance.AddEnterAction(GameManager.GameMode.Crafting, SetToCraftingMode);
         GameManager.instance.AddExitAction(GameManager.GameMode.Crafting, SetToPlayAreaMode);
+
+        pidController = new PIDController();
     }
 
     private void Update()
@@ -137,7 +142,8 @@ public class DragAndDrop : MonoBehaviour
             }
             else if (grabState == GRAB_STATE.GRABBED) //If the player has an object picked up continue logic
             {
-                MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
+                if(!selectedGameObject.GetComponent<Rigidbody>() || !usePIDController)
+                    MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
 
                 if (selectedGameObject.GetComponent<MobBrain>())
                 {
@@ -150,6 +156,13 @@ public class DragAndDrop : MonoBehaviour
                 }
             }
         }
+    }
+
+    void FixedUpdate()
+    {
+        if(selectedGameObject)
+            if(selectedGameObject.GetComponent<Rigidbody>() && usePIDController && grabState == GRAB_STATE.GRABBED)
+                MoveToCursor();
     }
 
     void CheckForForge()
@@ -193,7 +206,8 @@ public class DragAndDrop : MonoBehaviour
         ChangeAllLayersOfParentObject(selectedGameObject.transform);
         if (selectedGameObject.GetComponent<Rigidbody>())
         {
-            selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
+            if(!usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+                selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
         }
         grabState = GRAB_STATE.GRABBED;
     }
@@ -204,7 +218,8 @@ public class DragAndDrop : MonoBehaviour
         RestoreOriginalLayers();
         if (selectedGameObject.GetComponent<Rigidbody>())
         {
-            selectedGameObject.GetComponent<Rigidbody>().isKinematic = false;
+            if(!usePIDController && selectedGameObject.GetComponent<Rigidbody>()) 
+                selectedGameObject.GetComponent<Rigidbody>().isKinematic = false;
         }
         grabState = GRAB_STATE.EMPTY_HANDED;
     }
@@ -217,7 +232,20 @@ public class DragAndDrop : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100.0f, ~ignoredLayerMask))
         {
             Vector3 newPosition = new Vector3(hit.point.x, hit.point.y + heightOffset, hit.point.z);
-            selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+
+            if (usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+            {
+                pidController.targetPos = newPosition;
+
+                print(pidController.targetPos);
+
+                selectedGameObject.GetComponent<Rigidbody>().AddForce(pidController.Update(selectedGameObject.transform.position,
+                    selectedGameObject.GetComponent<Rigidbody>().velocity), ForceMode.Acceleration);
+            }
+            else
+            {
+                selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+            }
         }
     }
 

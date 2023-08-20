@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1599233119182716779}
   - component: {fileID: 2334437989275582974}
   - component: {fileID: 8542460515668995226}
-  m_Layer: 2
+  m_Layer: 7
   m_Name: TouchSensor_Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -77,7 +77,7 @@ GameObject:
   - component: {fileID: 2509000321643738103}
   - component: {fileID: 6164393966248926457}
   - component: {fileID: 4164690514125147086}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: VisualContainer
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 1511383092771581954}
   - component: {fileID: 4555400299547728543}
   - component: {fileID: 33281870152594371}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -246,7 +246,7 @@ GameObject:
   - component: {fileID: 2991881907089496998}
   - component: {fileID: 8554934141466450265}
   - component: {fileID: 1232674599300599658}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Imposter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,9 +337,9 @@ GameObject:
   - component: {fileID: 3318093275945387972}
   - component: {fileID: 7106079655771600090}
   - component: {fileID: 5900008355710209636}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BoxRollStepDwarf
-  m_TagString: Untagged
+  m_TagString: SelectablePlayAreaParent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
