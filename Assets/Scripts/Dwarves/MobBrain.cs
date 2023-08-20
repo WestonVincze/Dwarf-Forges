@@ -8,7 +8,8 @@ public class MobBrain : InputHandler
     enum BrainState
     {
         Tracking,
-        Pulling
+        Pulling,
+        Dead
     }
     
     // Target to move towards.
@@ -55,6 +56,7 @@ public class MobBrain : InputHandler
             rope = gameObject.AddComponent<SpringJoint>();
             rope.connectedBody = collider.gameObject.GetComponent<Rigidbody>();
             rope.maxDistance = 3;
+            rope.enableCollision = true;
 
             lineRenderer.enabled = true;
             /*
@@ -66,6 +68,17 @@ public class MobBrain : InputHandler
             */
 
             brainState = BrainState.Pulling;
+        }
+    }
+
+    public void Die()
+    {
+        brainState = BrainState.Dead;
+        GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(0, 5), 20, Random.Range(0, 5)), ForceMode.Impulse);
+        lineRenderer.enabled = false;
+        if(rope != null)
+        {
+            Destroy(rope);
         }
     }
 

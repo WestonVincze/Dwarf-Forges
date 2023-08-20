@@ -49,6 +49,6 @@ public class Destructible : MonoBehaviour
 
         //TODO: Implement death visuals. Either spawn in a new object
         //or delay to the end of the death animation before destroy.
-        Destroy(gameObject);
+        Destroy(gameObject, 3);
     }
 }

@@ -61,7 +61,9 @@ public class MobSpawner : MonoBehaviour
 
             mob.transform.parent = transform;
 
-            mob.GetComponent<MobBrain>().target = mobTarget;
+            MobBrain mobBrain = mob.GetComponent<MobBrain>();
+            mobBrain.target = mobTarget;
+            mob.GetComponent<Destructible>().OnDeath += mobBrain.Die;
             mob.GetComponent<Destructible>().OnDeath += Test;
         }
     }
