@@ -10,6 +10,7 @@ public class GunController : MonoBehaviour
     {
         GameObject hazard = Instantiate(hazardPrefab, firePoint.position, firePoint.rotation);
         hazard.GetComponent<Rigidbody>().velocity = firePoint.forward * hazardSpeed;
-        Destroy(hazard, 5f);
+        //Destroy(hazard, 5f);
+        hazard.GetComponent<HazardDamageHandler>().Destroy(5f);
     }
 }

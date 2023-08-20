@@ -1,15 +1,15 @@
 using System;
 using UnityEngine;
 
-public class Destructible : MonoBehaviour
+public class Destructible : DestroyableMonoBehavior
 {
     // Set the maximum health and initial health
     public float maxHealth = 100f;
     private float currentHealth;
 
     // Actions that can be registered to
-    public event Action<float> OnReceiveDamage;
-    public event Action<float> OnHeal;
+    public Action<float> OnReceiveDamage;
+    public Action<float> OnHeal;
     public Action OnDeath;
 
     private void Start()
@@ -49,6 +49,6 @@ public class Destructible : MonoBehaviour
 
         //TODO: Implement death visuals. Either spawn in a new object
         //or delay to the end of the death animation before destroy.
-        Destroy(gameObject, 3);
+        this.Destroy(3);
     }
 }
