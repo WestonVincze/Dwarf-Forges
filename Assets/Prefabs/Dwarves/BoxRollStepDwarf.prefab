@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1599233119182716779}
   - component: {fileID: 2334437989275582974}
   - component: {fileID: 8542460515668995226}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: TouchSensor_Front
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -523,7 +523,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  localTransform: {fileID: 2509000321643738103}
+  stableTransform: {fileID: 1511383092771581954}
   YawThreshold: 5
   PitchThreshold: 0.5
 --- !u!114 &7106079655771600090
