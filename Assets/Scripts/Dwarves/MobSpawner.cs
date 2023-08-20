@@ -60,6 +60,7 @@ public class MobSpawner : MonoBehaviour
             GameObject mob = Instantiate(mobToSpawn.mobPrefab, spawnPosition, Quaternion.identity);
 
             mob.transform.parent = transform;
+            mob.transform.LookAt(mobTarget);
 
             MobBrain mobBrain = mob.GetComponent<MobBrain>();
             mobBrain.target = mobTarget;

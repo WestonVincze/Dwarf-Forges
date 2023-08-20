@@ -349,7 +349,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 866470777}
-  m_LocalRotation: {x: 0.30259645, y: 0.017489279, z: -0.005553531, w: 0.95294213}
+  m_LocalRotation: {x: 0.30259645, y: 0.017489279, z: -0.005553532, w: 0.95294213}
   m_LocalPosition: {x: 0, y: 6.7016, z: -67.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -465,7 +465,7 @@ GameObject:
   - component: {fileID: 1060014498}
   - component: {fileID: 1060014497}
   - component: {fileID: 1060014499}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: LedgeForce
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1218,7 +1218,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1852071779}
-  m_LocalRotation: {x: 0.30259645, y: 0.017489279, z: -0.005553531, w: 0.95294213}
+  m_LocalRotation: {x: 0.30259645, y: 0.017489279, z: -0.005553532, w: 0.95294213}
   m_LocalPosition: {x: 0, y: 6.7016, z: -67.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
