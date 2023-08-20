@@ -1,8 +1,11 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.LowLevel;
-using static TorqueController;
 
+[RequireComponent(typeof(TorqueController))]
+[RequireComponent (typeof(Rigidbody))]
+[RequireComponent (typeof (RopeHandler))]
 public class MobBrain : InputHandler
 {
     enum BrainState
@@ -21,29 +24,11 @@ public class MobBrain : InputHandler
     public float PitchThreshold = 0.5f; // A small distance threshold for pitch direction.
 
     private BrainState brainState = BrainState.Tracking;
-
-    private LineRenderer lineRenderer;
-    private SpringJoint rope;
+    private RopeHandler ropeHandler;
 
     public void Start()
     {
-        lineRenderer = GetComponent<LineRenderer>();
-    }
-
-    public void Update()
-    {
-        if(brainState == BrainState.Pulling)
-        {
-            lineRenderer.SetPosition(0, transform.position);
-            lineRenderer.SetPosition(lineRenderer.positionCount - 1, target.position);
-
-            Vector3 dist = target.position - transform.position;
-
-            for (int i = 1; i < lineRenderer.positionCount - 1; i++)
-            {
-                lineRenderer.SetPosition(i, transform.position + (dist * lineRenderer.colorGradient.colorKeys[i].time));
-            }
-        }
+        ropeHandler = GetComponent<RopeHandler>();
     }
 
     public void TouchSensor_Front(Collider collider)
@@ -53,20 +38,7 @@ public class MobBrain : InputHandler
 
         if(collider.transform == target)
         {
-            rope = gameObject.AddComponent<SpringJoint>();
-            rope.connectedBody = collider.gameObject.GetComponent<Rigidbody>();
-            rope.maxDistance = 3;
-            rope.enableCollision = true;
-
-            lineRenderer.enabled = true;
-            /*
-            lineRenderer = gameObject.AddComponent<LineRenderer>();
-            lineRenderer.startWidth = 0.1f;
-            lineRenderer.endWidth = 0.1f;
-            lineRenderer.startColor = Color.black;
-            lineRenderer.endColor = Color.black;
-            */
-
+            ropeHandler.StartPullObject(collider, Random.Range(3,10));
             brainState = BrainState.Pulling;
         }
     }
@@ -75,11 +47,7 @@ public class MobBrain : InputHandler
     {
         brainState = BrainState.Dead;
         GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(0, 5), 20, Random.Range(0, 5)), ForceMode.Impulse);
-        lineRenderer.enabled = false;
-        if(rope != null)
-        {
-            Destroy(rope);
-        }
+        ropeHandler.StopPullObject();
     }
 
     public override InputStates GetInputStates()

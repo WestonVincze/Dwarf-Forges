@@ -12,6 +12,10 @@ public class AreaEffector : MonoBehaviour
         Rigidbody rb = other.GetComponent<Rigidbody>();
         if (rb != null)
             effectedObjects.Add(rb);
+
+        DestroyableMonoBehavior destroyable = other.GetComponent<DestroyableMonoBehavior>();
+        if (destroyable != null)
+            destroyable.OnDestroyEvent += () => effectedObjects.Remove(rb);
     }
 
     private void OnTriggerExit(Collider other)
@@ -19,6 +23,10 @@ public class AreaEffector : MonoBehaviour
         Rigidbody rb = other.GetComponent<Rigidbody>();
         if (rb != null)
             effectedObjects.Remove(rb);
+
+        DestroyableMonoBehavior destroyable = other.GetComponent<DestroyableMonoBehavior>();
+        if (destroyable != null)
+            destroyable.OnDestroyEvent += () => effectedObjects.Remove(rb);
     }
 
     public void FixedUpdate()
