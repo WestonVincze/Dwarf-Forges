@@ -139,9 +139,35 @@ public class DragAndDrop : MonoBehaviour
             {
                 MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
 
+                if (selectedGameObject.GetComponent<MobBrain>())
+                {
+                    CheckForForge();
+                }
+
                 if (Input.GetMouseButtonUp(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
                 {
                     DropItem(); //If they let go of the mouse button, drop the object
+                }
+            }
+        }
+    }
+
+    void CheckForForge()
+    {
+        if (selectedGameObject)
+        {
+            Ray ray = new Ray(selectedGameObject.transform.position, Vector3.down);
+            RaycastHit hit;
+
+            Debug.DrawRay(ray.origin, ray.direction * 100.0f);
+
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~ignoredLayerMask))
+            {
+
+                GameObject forge = FindParentObject(hit.transform, "Furnace")?.gameObject;
+                if (forge)
+                {
+                    //TODO: Add Dropping Into Forge
                 }
             }
         }

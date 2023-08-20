@@ -6,6 +6,7 @@ TagManager:
   tags:
   - SelectablePlayAreaParent
   - SelectableCraftingParent
+  - Furnace
   layers:
   - Default
   - TransparentFX
