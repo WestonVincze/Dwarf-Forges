@@ -8,7 +8,8 @@ public class MobBrain : InputHandler
     enum BrainState
     {
         Tracking,
-        Pulling
+        Pulling,
+        Dead
     }
     
     // Target to move towards.
@@ -24,12 +25,24 @@ public class MobBrain : InputHandler
     private LineRenderer lineRenderer;
     private SpringJoint rope;
 
+    public void Start()
+    {
+        lineRenderer = GetComponent<LineRenderer>();
+    }
+
     public void Update()
     {
-        if(lineRenderer != null)
+        if(brainState == BrainState.Pulling)
         {
             lineRenderer.SetPosition(0, transform.position);
             lineRenderer.SetPosition(lineRenderer.positionCount - 1, target.position);
+
+            Vector3 dist = target.position - transform.position;
+
+            for (int i = 1; i < lineRenderer.positionCount - 1; i++)
+            {
+                lineRenderer.SetPosition(i, transform.position + (dist * lineRenderer.colorGradient.colorKeys[i].time));
+            }
         }
     }
 
@@ -43,13 +56,29 @@ public class MobBrain : InputHandler
             rope = gameObject.AddComponent<SpringJoint>();
             rope.connectedBody = collider.gameObject.GetComponent<Rigidbody>();
             rope.maxDistance = 3;
+            rope.enableCollision = true;
+
+            lineRenderer.enabled = true;
+            /*
             lineRenderer = gameObject.AddComponent<LineRenderer>();
             lineRenderer.startWidth = 0.1f;
             lineRenderer.endWidth = 0.1f;
             lineRenderer.startColor = Color.black;
             lineRenderer.endColor = Color.black;
+            */
 
             brainState = BrainState.Pulling;
+        }
+    }
+
+    public void Die()
+    {
+        brainState = BrainState.Dead;
+        GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(0, 5), 20, Random.Range(0, 5)), ForceMode.Impulse);
+        lineRenderer.enabled = false;
+        if(rope != null)
+        {
+            Destroy(rope);
         }
     }
 

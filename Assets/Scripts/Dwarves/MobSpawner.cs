@@ -59,7 +59,11 @@ public class MobSpawner : MonoBehaviour
         {
             GameObject mob = Instantiate(mobToSpawn.mobPrefab, spawnPosition, Quaternion.identity);
 
-            mob.GetComponent<MobBrain>().target = mobTarget;
+            mob.transform.parent = transform;
+
+            MobBrain mobBrain = mob.GetComponent<MobBrain>();
+            mobBrain.target = mobTarget;
+            mob.GetComponent<Destructible>().OnDeath += mobBrain.Die;
             mob.GetComponent<Destructible>().OnDeath += Test;
         }
     }
