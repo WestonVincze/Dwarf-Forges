@@ -26,6 +26,8 @@ public class MobSpawner : MonoBehaviour
 
     private float spawnTimer = 0f;
 
+    public Transform mobTarget; //Transform mobs will target by default
+
     private void Update()
     {
         spawnTimer += Time.deltaTime;
@@ -43,6 +45,11 @@ public class MobSpawner : MonoBehaviour
         }
     }
 
+    private void Test()
+    {
+        Debug.Log("dead dwarf");
+    }
+
     private void SpawnMobAtLocation(SpawnLocation location)
     {
         Vector3 spawnPosition = GetSpawnPositionWithinBox(location);
@@ -50,7 +57,14 @@ public class MobSpawner : MonoBehaviour
 
         if (mobToSpawn != null)
         {
-            Instantiate(mobToSpawn.mobPrefab, spawnPosition, Quaternion.identity);
+            GameObject mob = Instantiate(mobToSpawn.mobPrefab, spawnPosition, Quaternion.identity);
+
+            mob.transform.parent = transform;
+
+            MobBrain mobBrain = mob.GetComponent<MobBrain>();
+            mobBrain.target = mobTarget;
+            mob.GetComponent<Destructible>().OnDeath += mobBrain.Die;
+            mob.GetComponent<Destructible>().OnDeath += Test;
         }
     }
 
