@@ -27,6 +27,9 @@ public class RopeHandler : MonoBehaviour
         rope.enableCollision = true;
         rope.autoConfigureConnectedAnchor = false;
 
+        Vector3 connectedRopeAnchorPos = targetCollider.ClosestPointOnBounds(new Vector3(transform.position.x, targetCollider.bounds.min.y - 0.1f, transform.position.z));
+        targetOffset = connectedRopeAnchorPos - target.position;
+
         lineRenderer.enabled = true;
 
         pulling = true;
@@ -67,7 +70,7 @@ public class RopeHandler : MonoBehaviour
         */
 
         Vector3 connectedRopeAnchorPos = targetCollider.ClosestPointOnBounds(new Vector3(transform.position.x, targetCollider.bounds.min.y - 0.1f, transform.position.z));
-        targetOffset = connectedRopeAnchorPos - target.position;
+        //targetOffset = connectedRopeAnchorPos - target.position;
 
         lineRenderer.SetPosition(0, transform.position);
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, connectedRopeAnchorPos);
