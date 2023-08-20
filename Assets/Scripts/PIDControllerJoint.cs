@@ -23,6 +23,8 @@ public class PIDControllerJoint : MonoBehaviour
     {
         _PIDController.targetPos = targetPos;
         _PIDController.targetVel = targetVel;
-        rb.AddForce(_PIDController.Update(transform.position, rb.velocity));
+        _PIDController.frequency = frequency;
+        _PIDController.damping = damping;
+        rb.AddForce(_PIDController.Update(transform.position, rb.velocity), ForceMode.Acceleration);
     }
 }
