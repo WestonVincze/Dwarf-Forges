@@ -1073,6 +1073,26 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1c9e966064002fb449324217326c26b6, type: 3}
+--- !u!1 &1358928728 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 996019280485623958, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+  m_PrefabInstance: {fileID: 1654457438807264151}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1358928730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1358928728}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53c7e2fc515ef4044b3aff34515b2b80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDwarvesInFurnace: 2
+  smeltingTime: 2
+  materialPrefab: {fileID: 8430064040801466331, guid: 4e4e65f2aff652e46b803cb07ccf9ca8, type: 3}
 --- !u!1 &1414898157
 GameObject:
   m_ObjectHideFlags: 0
@@ -1590,8 +1610,9 @@ MonoBehaviour:
   craftingTag: SelectableCraftingParent
   highlightedMaterial: {fileID: 2100000, guid: 293570e2738421f46b89622036c0bd81, type: 2}
   grabbedMaterial: {fileID: 2100000, guid: e1a3e79fb94ecfc4fbf46f916e3b4212, type: 2}
-  heightOffset: 0.75
+  heightOffset: 3
   lerpAmount: 3
+  usePIDController: 1
 --- !u!4 &1927000027 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3630984402490735787, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
@@ -1641,7 +1662,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 996019280485623958, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: Furnace
       objectReference: {fileID: 0}
     - target: {fileID: 1762538923720615007, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
       propertyPath: m_Convex
@@ -1737,6 +1758,9 @@ PrefabInstance:
       insertIndex: -1
       addedObject: {fileID: 1606081997}
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 996019280485623958, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1358928730}
     - targetCorrespondingSourceObject: {fileID: 2635790961068737985, guid: 69cb28baccd7b504b95073bcd0c15187, type: 3}
       insertIndex: -1
       addedObject: {fileID: 313904770}
