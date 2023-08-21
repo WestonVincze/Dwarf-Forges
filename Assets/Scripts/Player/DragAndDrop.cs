@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /*
@@ -136,7 +137,9 @@ public class DragAndDrop : MonoBehaviour
 
                     if (!_sameObject && selectedGameObject)
                     {
-                        UnHighlightObject(selectedGameObject.transform); //If the highlighted object and the object that the cursor is on is not the same, unhighlight the highlighted object
+                        print("GAMEOBJECT: " + selectedGameObject);
+                        if(selectedGameObject.transform)
+                            UnHighlightObject(selectedGameObject.transform); //If the highlighted object and the object that the cursor is on is not the same, unhighlight the highlighted object
                     }
                 }
             }
@@ -145,14 +148,21 @@ public class DragAndDrop : MonoBehaviour
                 if(!selectedGameObject.GetComponent<Rigidbody>() || !usePIDController)
                     MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
 
-                if (selectedGameObject.GetComponent<MobBrain>())
-                {
-                    CheckForForge();
-                }
-
                 if (Input.GetMouseButtonUp(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
                 {
-                    DropItem(); //If they let go of the mouse button, drop the object
+                    if (selectedGameObject.GetComponent<MobBrain>() && CheckForForge())
+                    {
+                        Destroy(selectedGameObject);
+                        FurnaceManager.Instance.AddDwarf();
+                        originalMaterials.Clear();
+                        originalLayers.Clear();
+                        selectedGameObject = null;
+                        grabState = GRAB_STATE.EMPTY_HANDED;
+                    }
+                    else
+                    {
+                        DropItem(); //If they let go of the mouse button, drop the object
+                    }
                 }
             }
         }
@@ -165,7 +175,7 @@ public class DragAndDrop : MonoBehaviour
                 MoveToCursor();
     }
 
-    void CheckForForge()
+    bool CheckForForge()
     {
         if (selectedGameObject)
         {
@@ -181,9 +191,12 @@ public class DragAndDrop : MonoBehaviour
                 if (forge)
                 {
                     //TODO: Add Dropping Into Forge
+                    return true;
                 }
             }
         }
+
+        return false;
     }
 
     private void HighlightObject(Transform _parentObject)
@@ -236,8 +249,6 @@ public class DragAndDrop : MonoBehaviour
             if (usePIDController && selectedGameObject.GetComponent<Rigidbody>())
             {
                 pidController.targetPos = newPosition;
-
-                print(pidController.targetPos);
 
                 selectedGameObject.GetComponent<Rigidbody>().AddForce(pidController.Update(selectedGameObject.transform.position,
                     selectedGameObject.GetComponent<Rigidbody>().velocity), ForceMode.Acceleration);

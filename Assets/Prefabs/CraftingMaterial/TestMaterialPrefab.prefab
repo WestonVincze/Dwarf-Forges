@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 6099324720249838232}
   - component: {fileID: 1186035278425907380}
   - component: {fileID: 7335048384595052584}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: TestMaterialPrefab
-  m_TagString: Untagged
+  m_TagString: SelectablePlayAreaParent
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

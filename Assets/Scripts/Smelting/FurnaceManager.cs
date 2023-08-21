@@ -1,9 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FurnaceManager : MonoBehaviour
 {
+    public static FurnaceManager Instance { get; private set; }
+
     private enum MATERIAL_TYPE
     {
         VOLATILE,
@@ -22,12 +25,24 @@ public class FurnaceManager : MonoBehaviour
 
     private float smeltingEndTime;
 
-    void AddDwarf(GameObject _dwarfGameObject)
+    void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
+    public void AddDwarf()
     {
         print("Added Dwarf");
 
         if (storedDwarves.Count < maxDwarvesInFurnace)
-            storedDwarves.Add(_dwarfGameObject);
+            storedDwarves.Add(new GameObject("TestDwarf"));
 
         if (storedDwarves.Count >= maxDwarvesInFurnace)
         {
@@ -78,7 +93,7 @@ public class FurnaceManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            AddDwarf(new GameObject("DwarfTest"));
+            AddDwarf();
         }
     }
 
