@@ -2,26 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.Terrain;
 
 public class FurnaceManager : MonoBehaviour
 {
     public static FurnaceManager Instance { get; private set; }
 
-    private enum MATERIAL_TYPE
-    {
-        VOLATILE,
-        DURABLE,
-        LIGHT,
-        STRONG
-    }
-
     [SerializeField] private int maxDwarvesInFurnace;
     [SerializeField] private float smeltingTime;
-    [SerializeField] private GameObject materialPrefab;
 
-    private List<GameObject> storedDwarves = new List<GameObject>();
-    private Dictionary<MATERIAL_TYPE, List<float>> finishTimes = new Dictionary<MATERIAL_TYPE, List<float>>();
-    private Queue<MATERIAL_TYPE> materialQueue = new Queue<MATERIAL_TYPE>();
+    private List<DwarfInformation.DWARF_TYPE> storedDwarves = new List<DwarfInformation.DWARF_TYPE>();
 
     private float smeltingEndTime;
 
@@ -37,76 +27,56 @@ public class FurnaceManager : MonoBehaviour
         }
     }
 
-    public void AddDwarf()
+    public bool AddDwarf(DwarfInformation.DWARF_TYPE _dwarfType)
     {
-        print("Added Dwarf");
-
         if (storedDwarves.Count < maxDwarvesInFurnace)
-            storedDwarves.Add(new GameObject("TestDwarf"));
-
-        if (storedDwarves.Count >= maxDwarvesInFurnace)
         {
-            StartSmeltingMaterial(MATERIAL_TYPE.DURABLE, smeltingTime);
-            storedDwarves.Clear();
+            storedDwarves.Add(_dwarfType);
+            smeltingEndTime = Time.time + smeltingTime;
+            print("Added Dwarf Of Type: " + _dwarfType);
+            return true;
         }
-    }
 
-    void StartSmeltingMaterial(MATERIAL_TYPE _type, float _smeltingTime)
-    {
-        print("Starting To Smelt");
-        smeltingEndTime = Time.time + _smeltingTime;
-
-        EnqueueEnumWithFinishTime(_type, smeltingEndTime);
-    }
-
-    public void UpdateQueue()
-    {
-        while (materialQueue.Count > 0)
-        {
-            MATERIAL_TYPE frontEnum = materialQueue.Peek();
-            if (finishTimes.ContainsKey(frontEnum) && finishTimes[frontEnum].Count > 0 && Time.time >= finishTimes[frontEnum][0])
-            {
-                finishTimes[frontEnum].RemoveAt(0);
-                if (finishTimes[frontEnum].Count == 0)
-                {
-                    finishTimes.Remove(frontEnum);
-                }
-                materialQueue.Dequeue();
-                Debug.Log("Enum with finish time completed: " + frontEnum);
-                Instantiate(materialPrefab,
-                    new Vector3(transform.position.x, transform.position.y + 5.0f, transform.position.z),
-                    Quaternion.identity);
-            }
-            else
-            {
-                break; // Exit loop if no more items to process
-            }
-        }
+        return false;
     }
 
     void Update()
     {
-        if (materialQueue.Count > 0)
+        if (storedDwarves.Count > 0)
         {
-            UpdateQueue();
+            if(Time.time >= smeltingEndTime)
+                FinishSmelting();
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-            AddDwarf();
+            AddDwarf(DwarfInformation.DWARF_TYPE.DURABLE);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            AddDwarf(DwarfInformation.DWARF_TYPE.LIGHT);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            AddDwarf(DwarfInformation.DWARF_TYPE.STRONG);
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            AddDwarf(DwarfInformation.DWARF_TYPE.VOLATILE);
         }
     }
 
-    // Enqueue an enum value with a specific finish time
-    void EnqueueEnumWithFinishTime(MATERIAL_TYPE enumType, float finishTime)
+    void FinishSmelting()
     {
-        materialQueue.Enqueue(enumType);
+        if (storedDwarves.Count == 1)
+            Instantiate(BarCraftingManager.Instance.CraftBar(storedDwarves[0]),
+                new Vector3(transform.position.x, transform.position.y + 5.0f, transform.position.z),
+                Quaternion.identity);
+        else if (storedDwarves.Count > 1)
+            Instantiate(BarCraftingManager.Instance.CraftBar(storedDwarves[0], storedDwarves[1]),
+                new Vector3(transform.position.x, transform.position.y + 5.0f, transform.position.z),
+                Quaternion.identity);
 
-        if (!finishTimes.ContainsKey(enumType))
-        {
-            finishTimes[enumType] = new List<float>();
-        }
-
-        finishTimes[enumType].Add(finishTime);
+        storedDwarves.Clear();
     }
 }

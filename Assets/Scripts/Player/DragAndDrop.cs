@@ -138,7 +138,6 @@ public class DragAndDrop : MonoBehaviour
 
                     if (!_sameObject && selectedGameObject)
                     {
-                        print("GAMEOBJECT: " + selectedGameObject);
                         if(selectedGameObject.transform)
                             UnHighlightObject(selectedGameObject.transform); //If the highlighted object and the object that the cursor is on is not the same, unhighlight the highlighted object
                     }
@@ -151,14 +150,18 @@ public class DragAndDrop : MonoBehaviour
 
                 if (Input.GetMouseButtonUp(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
                 {
-                    if (selectedGameObject.GetComponent<MobBrain>() && CheckForForge())
+                    if (selectedGameObject.GetComponent<DwarfInformation>() && CheckForForge())
                     {
-                        Destroy(selectedGameObject);
-                        FurnaceManager.Instance.AddDwarf();
-                        originalMaterials.Clear();
-                        originalLayers.Clear();
-                        selectedGameObject = null;
-                        grabState = GRAB_STATE.EMPTY_HANDED;
+                        if (FurnaceManager.Instance.AddDwarf(selectedGameObject.GetComponent<DwarfInformation>()
+                                .GetDwarfType()))
+                        {
+                            Destroy(selectedGameObject);
+                            originalMaterials.Clear();
+                            originalLayers.Clear();
+                            selectedGameObject = null;
+                            grabState = GRAB_STATE.EMPTY_HANDED;
+                        }
+
                     }
                     else
                     {
