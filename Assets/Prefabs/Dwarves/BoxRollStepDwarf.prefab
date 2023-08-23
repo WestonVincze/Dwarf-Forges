@@ -337,6 +337,7 @@ GameObject:
   - component: {fileID: 3318093275945387972}
   - component: {fileID: 7106079655771600090}
   - component: {fileID: 5900008355710209636}
+  - component: {fileID: 6405505332477718044}
   m_Layer: 7
   m_Name: BoxRollStepDwarf
   m_TagString: SelectablePlayAreaParent
@@ -644,3 +645,15 @@ LineRenderer:
   m_UseWorldSpace: 1
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &6405505332477718044
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6198896710538868493}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3284fb473d78ad749bee749b9ff2d022, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

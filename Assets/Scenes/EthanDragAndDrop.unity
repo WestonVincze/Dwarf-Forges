@@ -1091,7 +1091,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxDwarvesInFurnace: 2
-  smeltingTime: 2
+  smeltingTime: 5
 --- !u!114 &1358928732
 MonoBehaviour:
   m_ObjectHideFlags: 0
