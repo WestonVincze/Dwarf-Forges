@@ -41,6 +41,7 @@ public class DragAndDrop : MonoBehaviour
 
     [Header("LayerMasks")]
     [SerializeField] private LayerMask draggableLayerMask;
+    [SerializeField] private LayerMask furnaceLayerMask;
     [SerializeField] private LayerMask ignoredLayerMask;
 
     private int originalLayer;
@@ -179,12 +180,12 @@ public class DragAndDrop : MonoBehaviour
     {
         if (selectedGameObject)
         {
-            Ray ray = new Ray(selectedGameObject.transform.position, Vector3.down);
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
             Debug.DrawRay(ray.origin, ray.direction * 100.0f);
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~ignoredLayerMask))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, furnaceLayerMask))
             {
 
                 GameObject forge = FindParentObject(hit.transform, "Furnace")?.gameObject;
