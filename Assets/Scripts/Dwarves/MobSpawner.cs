@@ -60,12 +60,12 @@ public class MobSpawner : MonoBehaviour
             GameObject mob = Instantiate(mobToSpawn.mobPrefab, spawnPosition, Quaternion.identity);
 
             mob.transform.parent = transform;
-            mob.transform.LookAt(mobTarget);
+            //mob.transform.LookAt(new Vector3(mobTarget.position.x, spawnPosition.y, mobTarget.position.y));
 
-            MobBrain mobBrain = mob.GetComponent<MobBrain>();
+            MobBrain mobBrain = mob.GetComponentInChildren<MobBrain>();
             mobBrain.target = mobTarget;
-            mob.GetComponent<Destructible>().OnDeath += mobBrain.Die;
-            mob.GetComponent<Destructible>().OnDeath += Test;
+            mob.GetComponentInChildren<Destructible>().OnDeath += mobBrain.Die;
+            mob.GetComponentInChildren<Destructible>().OnDeath += Test;
         }
     }
 

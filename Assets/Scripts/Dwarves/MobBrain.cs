@@ -3,9 +3,6 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
-[RequireComponent(typeof(TorqueController))]
-[RequireComponent (typeof(Rigidbody))]
-[RequireComponent (typeof (RopeHandler))]
 public class MobBrain : InputHandler
 {
     enum BrainState
@@ -18,6 +15,8 @@ public class MobBrain : InputHandler
     // Target to move towards.
     public Transform target;
     public Transform stableTransform; //This is a transform disconnected from the rigidbody movement
+
+    public bool showDebugVision; //Enables debug draw rays
 
     public float YawThreshold = 5.0f;  // A small angular threshold for yaw direction.
     public float PitchThreshold = 0.5f; // A small distance threshold for pitch direction.
@@ -33,7 +32,7 @@ public class MobBrain : InputHandler
 
     public void Start()
     {
-        ropeHandler = GetComponent<RopeHandler>();
+        ropeHandler = GetComponentInChildren<RopeHandler>();
     }
 
     public void TouchSensor_Front(Collider collider)
@@ -51,7 +50,7 @@ public class MobBrain : InputHandler
     public void Die()
     {
         brainState = BrainState.Dead;
-        GetComponent<Rigidbody>().AddForce(new Vector3(Random.Range(0, 5), 20, Random.Range(0, 5)), ForceMode.Impulse);
+        GetComponentInChildren<Rigidbody>().AddForce(new Vector3(Random.Range(0, 5), 20, Random.Range(0, 5)), ForceMode.Impulse);
         ropeHandler.StopPullObject();
     }
 
@@ -160,6 +159,20 @@ public class MobBrain : InputHandler
         // Generate additional rays based on the desired number of angles
         for (int i = 1; i <= (avoidanceAngle / avoidanceAngleIncrement); i++)
         {
+            //Based on the mob's position relative to the z-axis, determine the look bias
+            if ((brainState == BrainState.Tracking && stableTransform.position.z > 0) || (brainState == BrainState.Pulling && stableTransform.position.z < 0))
+            {
+                // Add left and right rays for each angle increment
+                rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
+                rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(-i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
+            }
+            else
+            {
+                // Add left and right rays for each angle increment
+                rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(-i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
+                rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
+            }
+            /*
             //If the target angle direction is to the right, favor the right, otherwise favor the left
             if(targetAngleDir > 0)
             {
@@ -173,6 +186,7 @@ public class MobBrain : InputHandler
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(-i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
             }
+            */
         }
 
         // Raycast for each ray and store the results
@@ -237,14 +251,17 @@ public class MobBrain : InputHandler
             }
         }
 
-        // Visualize with Debug.DrawRay
-        for (int i = 0; i < rays.Count; i++)
+        if (showDebugVision)
         {
-            Color rayColor = (distances[i] > avoidanceDist) ? Color.green : Color.red;
-            if (i == maxDistIndex)
-                rayColor = Color.blue;
+            // Visualize with Debug.DrawRay
+            for (int i = 0; i < rays.Count; i++)
+            {
+                Color rayColor = (distances[i] > avoidanceDist) ? Color.green : Color.red;
+                if (i == maxDistIndex)
+                    rayColor = Color.blue;
 
-            Debug.DrawRay(rays[i].origin, rays[i].direction * avoidanceDist, rayColor);
+                Debug.DrawRay(rays[i].origin, rays[i].direction * avoidanceDist, rayColor);
+            }
         }
 
         return retVal;

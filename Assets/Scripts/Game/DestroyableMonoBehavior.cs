@@ -13,6 +13,13 @@ public abstract class DestroyableMonoBehavior : MonoBehaviour
 
     public void Destroy(float time = 0)
     {
-        Destroy(gameObject, time);
+        if(gameObject.transform.parent)
+        {
+            Destroy(gameObject.transform.parent, time);
+        }
+        else
+        {
+            Destroy(gameObject, time);
+        }
     }
 }
