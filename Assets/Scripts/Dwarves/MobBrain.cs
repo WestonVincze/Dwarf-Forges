@@ -28,7 +28,11 @@ public class MobBrain : InputHandler
     public float avoidanceAngleIncrement = 15;
     public float avoidanceDist = 5;
 
-    private float lookAheadAvoidanceLinger = 0;
+    public float avoidanceBiasSwitchCooldown = 1.0f;
+    private float nextAvoidanceBiasSwitchTime = 0.0f;
+    private bool avoidanceBias = false; //True = right, false = left
+
+    //private float lookAheadAvoidanceLinger = 0;
 
     public void Start()
     {
@@ -70,12 +74,13 @@ public class MobBrain : InputHandler
         else if(brainState == BrainState.Pulling)
         {
             targetPos = new Vector3(stableTransform.position.x, stableTransform.position.y, 1000);
-            lookAheadAvoidanceLinger = 0;
+            //lookAheadAvoidanceLinger = 0;
         }
 
         Vector3 directionToTarget = targetPos - stableTransform.position;
         float angleToTarget = Vector3.SignedAngle(stableTransform.forward, directionToTarget, stableTransform.up);
         float newLookAheadAvoidance = LookAheadAvoidance(targetPos);
+        /*
         if (Mathf.Abs(newLookAheadAvoidance) > Mathf.Abs(lookAheadAvoidanceLinger))
             lookAheadAvoidanceLinger = newLookAheadAvoidance;
 
@@ -92,7 +97,7 @@ public class MobBrain : InputHandler
                 lookAheadAvoidanceLinger += Time.deltaTime * avoidanceAngle;
             }
         }
-        
+        */
 
         // "Think" about yaw direction.
         states.E = angleToTarget > YawThreshold;  // yawLeft
@@ -156,9 +161,20 @@ public class MobBrain : InputHandler
         // Add the forward ray to the list
         rays.Add(new Ray(stableTransform.position, stableTransform.forward));
 
+        //Get left/right bias
+        if(Time.time >= nextAvoidanceBiasSwitchTime)
+        {
+            if(avoidanceBias != (targetAngleDir > 0))
+            {
+                avoidanceBias = (targetAngleDir > 0);
+                nextAvoidanceBiasSwitchTime = Time.time + avoidanceBiasSwitchCooldown;
+            }
+        }
+
         // Generate additional rays based on the desired number of angles
         for (int i = 1; i <= (avoidanceAngle / avoidanceAngleIncrement); i++)
         {
+            /*
             //Based on the mob's position relative to the z-axis, determine the look bias
             if ((brainState == BrainState.Tracking && stableTransform.position.z > 0) || (brainState == BrainState.Pulling && stableTransform.position.z < 0))
             {
@@ -172,9 +188,9 @@ public class MobBrain : InputHandler
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(-i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
             }
-            /*
+            */
             //If the target angle direction is to the right, favor the right, otherwise favor the left
-            if(targetAngleDir > 0)
+            if(avoidanceBias)
             {
                 // Add left and right rays for each angle increment
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
@@ -186,7 +202,6 @@ public class MobBrain : InputHandler
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(-i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
                 rays.Add(new Ray(stableTransform.position, Quaternion.AngleAxis(i * avoidanceAngleIncrement, stableTransform.up) * stableTransform.forward));
             }
-            */
         }
 
         // Raycast for each ray and store the results
