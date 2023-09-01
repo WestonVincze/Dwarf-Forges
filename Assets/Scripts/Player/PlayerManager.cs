@@ -1,7 +1,4 @@
-using System;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 /*
@@ -10,9 +7,6 @@ using UnityEngine.InputSystem;
  */
 public class PlayerManager: MonoBehaviour
 {
-    [SerializeField]
-    private Camera _camera;
-
     private PlayerInputActions _playerInputActions;
     private InputAction _interactAction;
     private InputAction _craftingModeAction;
@@ -41,10 +35,13 @@ public class PlayerManager: MonoBehaviour
     private void InteractWIthObject(InputAction.CallbackContext context)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, 100, LayerMask.GetMask("Interactable"))) 
+        RaycastHit hit;
+        // TODO: implement a better way to interact with things. For now, a dedicated layer will work.
+        if (Physics.Raycast(ray, out hit, 100, LayerMask.GetMask("Interactable"))) 
         {
             // only the crafting table is interactable... quick and dirty for now
-            // TODO: add hover effect, implement events for interactable objects
+            // TODO: add hover effect, implement events for interactable objects?
+            //hit.collider.GetComponent<>();
             GameManager.instance.SetGameMode(GameManager.GameMode.Crafting);
         }
     }
