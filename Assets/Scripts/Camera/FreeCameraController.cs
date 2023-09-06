@@ -133,8 +133,13 @@ public class FreeCameraController : MonoBehaviour
         float targetPositionY = Mathf.Clamp(_cameraTransform.position.y + increment, _minPositionY, _maxPositionY);
         float targetRotationX = Mathf.Clamp(_cameraTransform.eulerAngles.x + increment, _minRotationX, _maxRotationX);
 
-        _cameraTransform.position = new Vector3(_cameraTransform.position.x, Mathf.Lerp(_cameraTransform.position.y, targetPositionY, _zoomSpeed * Time.deltaTime), _cameraTransform.position.z);
-        _cameraTransform.eulerAngles = new Vector3(Mathf.Lerp(_cameraTransform.eulerAngles.x, targetRotationX, _rotationSpeed * Time.deltaTime), _cameraTransform.eulerAngles.y, _cameraTransform.eulerAngles.z);
+        _cameraTransform.position = new Vector3(_cameraTransform.position.x,
+                                                Mathf.Lerp(_cameraTransform.position.y, targetPositionY, _zoomSpeed * Time.deltaTime),
+                                                _cameraTransform.position.z);
+
+        _cameraTransform.eulerAngles = new Vector3(Mathf.Lerp(_cameraTransform.eulerAngles.x, targetRotationX, _rotationSpeed * Time.deltaTime),
+                                                   _cameraTransform.eulerAngles.y,
+                                                   _cameraTransform.eulerAngles.z);
     }
 
     private void RotateCamera(float rotateY)
