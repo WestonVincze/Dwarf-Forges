@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -19,6 +20,18 @@ public class BarInventory : MonoBehaviour
     private EventSystem eventSystem;
 
     private bool _isOpened;
+
+    public bool isOpened
+    {
+        get => _isOpened;
+        set
+        {
+            _isOpened = value;
+            if (_isOpened) OpenInventory();
+            else if (!_isOpened) CloseInventory();
+        }
+    }
+
     private GameObject _previousRaycastedUI;
 
     void Awake()
@@ -31,6 +44,8 @@ public class BarInventory : MonoBehaviour
         // Get the GraphicRaycaster and EventSystem from the World Space Canvas
         raycaster = _inventoryCanvas.GetComponent<GraphicRaycaster>();
         eventSystem = _inventoryCanvas.GetComponent<EventSystem>();
+
+        isOpened = false;
     }
 
     void AddInventorySlot(GameObject inventoryObject)
@@ -42,12 +57,32 @@ public class BarInventory : MonoBehaviour
 
     void Update()
     {
+        print(isOpened);
+
+        transform.LookAt(Camera.main.transform.position);
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            isOpened = !isOpened;
+        }
+
         CheckForRaycastOnSlot();
 
         if (Input.GetKeyDown(KeyCode.P))
         {
             AddInventorySlot(_testPrefab);
         }
+    }
+
+    void OpenInventory()
+    {
+        if(!_inventoryCanvas.enabled)
+            _inventoryCanvas.enabled = true;
+    }
+    void CloseInventory()
+    {
+        if (_inventoryCanvas.enabled)
+            _inventoryCanvas.enabled = false;
     }
 
     void CheckForRaycastOnSlot()
