@@ -785,7 +785,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687212131}
-  m_LocalRotation: {x: 0.38268343, y: 0.000000015896621, z: -0.000000006584596, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: -0.000000015896624, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 8.51, z: -56.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1452,7 +1452,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268343, y: 0.000000015896621, z: -0.000000006584596, w: 0.92387956}
+  m_LocalRotation: {x: 0.38268343, y: -0.000000015896624, z: 0.0000000065845964, w: 0.92387956}
   m_LocalPosition: {x: 0, y: 8.51, z: -56.98}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1898,7 +1898,7 @@ MonoBehaviour:
     m_Bits: 128
   ignoredLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 68
   playAreaTag: SelectablePlayAreaParent
   craftingTag: SelectableCraftingParent
   highlightedMaterial: {fileID: 2100000, guid: 293570e2738421f46b89622036c0bd81, type: 2}
@@ -2541,8 +2541,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 8, y: 5, z: 8}
-  m_Center: {x: 0, y: 2.45, z: 0}
+  m_Size: {x: 8, y: 2.5899627, z: 8}
+  m_Center: {x: 0, y: 1.2449812, z: 0}
 --- !u!54 &1654457438807264154
 Rigidbody:
   m_ObjectHideFlags: 0
