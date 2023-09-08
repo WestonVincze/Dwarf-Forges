@@ -30,19 +30,6 @@ public class FurnaceManager : MonoBehaviour
         _timerManager = GetComponent<TimerManager>();
     }
 
-    public bool AddDwarf(DwarfInformation.DWARF_TYPE _dwarfType)
-    {
-        if (storedDwarves.Count < maxDwarvesInFurnace)
-        {
-            storedDwarves.Add(_dwarfType);
-            _timerManager.StartTimer(smeltingTime, FinishSmelting);
-            print("Added Dwarf Of Type: " + _dwarfType);
-            return true;
-        }
-
-        return false;
-    }
-
     void Update()
     {
         if(GameManager.instance.inDebugMode)
@@ -66,6 +53,19 @@ public class FurnaceManager : MonoBehaviour
         }
     }
 
+    public bool AddDwarf(DwarfInformation.DWARF_TYPE _dwarfType)
+    {
+        if (storedDwarves.Count < maxDwarvesInFurnace)
+        {
+            storedDwarves.Add(_dwarfType);
+            _timerManager.StartTimer(smeltingTime, FinishSmelting);
+            print("Added Dwarf Of Type: " + _dwarfType);
+            return true;
+        }
+
+        return false;
+    }
+
     void FinishSmelting()
     {
         if(storedDwarves.Count <= 0)
@@ -79,5 +79,12 @@ public class FurnaceManager : MonoBehaviour
         }
 
         storedDwarves.Clear();
+    }
+
+    public bool IsFurnaceFull()
+    {
+        if (storedDwarves.Count >= maxDwarvesInFurnace)
+            return true;
+        return false;
     }
 }

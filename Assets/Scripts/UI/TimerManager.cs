@@ -11,7 +11,7 @@ public class TimerManager : MonoBehaviour
     private bool _timerStarted;
     private Action _completedAction;
 
-    [SerializeField] private Image _fillImage;
+    [SerializeField] private Image _fillImage = null;
 
     void LateUpdate()
     {

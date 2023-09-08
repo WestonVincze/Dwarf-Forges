@@ -164,6 +164,10 @@ public class DragAndDrop : MonoBehaviour
                             selectedGameObject = null;
                             grabState = GRAB_STATE.EMPTY_HANDED;
                         }
+                        else if (FurnaceManager.Instance.IsFurnaceFull())
+                        {
+                            DropItem();
+                        }
 
                     }
                     else
