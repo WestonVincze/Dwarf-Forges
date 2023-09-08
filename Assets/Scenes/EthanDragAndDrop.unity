@@ -1490,7 +1490,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 32
 --- !u!114 &1495390185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1571,7 +1571,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inventoryCanvas: {fileID: 1495390186}
-  _testPrefab: {fileID: 8430064040801466331, guid: fa2b68505e7b6dd4f9b2b980dd1ca34a, type: 3}
+  _testPrefabs:
+  - {fileID: 8430064040801466331, guid: 57b6dd41d85db434296d353f7d382216, type: 3}
+  - {fileID: 8430064040801466331, guid: b9a469dab784cb94f8dee1ac971e46e4, type: 3}
+  - {fileID: 8430064040801466331, guid: f65043ade74f510488a405f2cc91bcb8, type: 3}
+  - {fileID: 8430064040801466331, guid: c2ba92e93b37c1241a2e8701e658e356, type: 3}
+  - {fileID: 8430064040801466331, guid: fa2b68505e7b6dd4f9b2b980dd1ca34a, type: 3}
+  - {fileID: 8430064040801466331, guid: a4854bc6047fed44c82e74d71d524250, type: 3}
+  - {fileID: 8430064040801466331, guid: 0932f0e88ebe8dd4aa4578fe49807809, type: 3}
+  - {fileID: 8430064040801466331, guid: 3839e74e8f55d0e4e90c0232143ad5e0, type: 3}
+  - {fileID: 8430064040801466331, guid: 8184eb8e46caf14408cf2e55d2460401, type: 3}
+  - {fileID: 8430064040801466331, guid: ae4ecbb2ccf6bf845a522d458b17e556, type: 3}
+  - {fileID: 8430064040801466331, guid: 03f704661d9eb7348a8854e48d9c3379, type: 3}
+  - {fileID: 8430064040801466331, guid: 51b37d2ac13baf84bbdcadc5592b8ff7, type: 3}
+  - {fileID: 8430064040801466331, guid: 0595aa221c2f42744bdab50eb3a39ebe, type: 3}
+  - {fileID: 8430064040801466331, guid: 9a9f465c88628994c8e6f7da279514ab, type: 3}
   _inventoryLayerGroupParent: {fileID: 1146808562}
   _slotPrefab: {fileID: 5938182113304862724, guid: e5a414521140a9c4b83896b4a2feb7cb, type: 3}
   _uiLayerMask:

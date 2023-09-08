@@ -27,7 +27,6 @@ public class InventorySlot : MonoBehaviour
 
     public void HighlightSlot()
     {
-        print("HIGHLIGHTED " + name);
         _isHighlighted = true;
         _slotImage.color = new Color(_slotImage.color.r, _slotImage.color.g, _slotImage.color.b, 1.0f);
     }
@@ -39,5 +38,6 @@ public class InventorySlot : MonoBehaviour
     }
 
     public RawImage GetSlotImage() { return _slotImage; }
+    public GameObject GetBar() {return _barPrefab;}
     public bool GetIsHighlighted() { return _isHighlighted; }
 }

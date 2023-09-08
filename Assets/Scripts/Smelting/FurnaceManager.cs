@@ -48,34 +48,35 @@ public class FurnaceManager : MonoBehaviour
                 FinishSmelting();
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if(GameManager.instance.inDebugMode)
         {
-            AddDwarf(DwarfInformation.DWARF_TYPE.DURABLE);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            AddDwarf(DwarfInformation.DWARF_TYPE.LIGHT);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            AddDwarf(DwarfInformation.DWARF_TYPE.STRONG);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            AddDwarf(DwarfInformation.DWARF_TYPE.VOLATILE);
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                AddDwarf(DwarfInformation.DWARF_TYPE.DURABLE);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                AddDwarf(DwarfInformation.DWARF_TYPE.LIGHT);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha3))
+            {
+                AddDwarf(DwarfInformation.DWARF_TYPE.STRONG);
+            }
+            else if (Input.GetKeyDown(KeyCode.Alpha4))
+            {
+                AddDwarf(DwarfInformation.DWARF_TYPE.VOLATILE);
+            }
         }
     }
 
     void FinishSmelting()
     {
         if (storedDwarves.Count == 1)
-            Instantiate(BarCraftingManager.Instance.CraftBar(storedDwarves[0]),
-                new Vector3(transform.position.x, transform.position.y + 5.0f, transform.position.z),
-                Quaternion.identity);
+            FindAnyObjectByType<BarInventory>().GetComponent<BarInventory>().AddInventorySlot(BarCraftingManager.Instance.CraftBar(storedDwarves[0]));
         else if (storedDwarves.Count > 1)
-            Instantiate(BarCraftingManager.Instance.CraftBar(storedDwarves[0], storedDwarves[1]),
-                new Vector3(transform.position.x, transform.position.y + 5.0f, transform.position.z),
-                Quaternion.identity);
+        {
+            FindAnyObjectByType<BarInventory>().GetComponent<BarInventory>().AddInventorySlot(BarCraftingManager.Instance.CraftBar(storedDwarves[0], storedDwarves[1]));
+        }
 
         storedDwarves.Clear();
     }

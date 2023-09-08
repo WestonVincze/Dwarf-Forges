@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.UI;
 
 /*
  * Instructions On How Drag And Drop Works
@@ -229,6 +232,20 @@ public class DragAndDrop : MonoBehaviour
         grabState = GRAB_STATE.GRABBED;
     }
 
+    public void PickUpItem(GameObject _objectToPickUp)
+    {
+        selectedGameObject = _objectToPickUp;
+
+        ChangeAllMaterialsOfParentObject(selectedGameObject.transform, grabbedMaterial, true);
+        ChangeAllLayersOfParentObject(selectedGameObject.transform);
+        if (selectedGameObject.GetComponent<Rigidbody>())
+        {
+            if (!usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+                selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
+        }
+        grabState = GRAB_STATE.GRABBED;
+    }
+
     private void DropItem()
     {
         RestoreOriginalMaterials();
@@ -243,25 +260,56 @@ public class DragAndDrop : MonoBehaviour
 
     private void MoveToCursor() //TODO: CHANGE THE MOVEMENT TO USE RIGIDBODY WITH PID CONTROLLER
     {
+        Vector3 newPosition = GetCursorPosition();
+
+        if (usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+        {
+            pidController.targetPos = newPosition;
+
+            selectedGameObject.GetComponent<Rigidbody>().AddForce(pidController.Update(selectedGameObject.transform.position,
+                selectedGameObject.GetComponent<Rigidbody>().velocity), ForceMode.Acceleration);
+        }
+        else
+        {
+            selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+        }
+    }
+
+    private Vector3 GetCursorPosition()
+    {
+        // Create a ray from the mouse position
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
+        // Perform a raycast into the UI
         if (Physics.Raycast(ray, out hit, 100.0f, ~ignoredLayerMask))
         {
-            Vector3 newPosition = new Vector3(hit.point.x, hit.point.y + heightOffset, hit.point.z);
+            // Check if the ray hit a UI element
+            RectTransform rectTransform = hit.transform.GetComponent<RectTransform>();
 
-            if (usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+            if (rectTransform != null)
             {
-                pidController.targetPos = newPosition;
+                // Get the local position of the hit point within the RectTransform
+                Vector2 localPoint;
 
-                selectedGameObject.GetComponent<Rigidbody>().AddForce(pidController.Update(selectedGameObject.transform.position,
-                    selectedGameObject.GetComponent<Rigidbody>().velocity), ForceMode.Acceleration);
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, hit.point, Camera.main,
+                        out localPoint))
+                {
+                    // Now, 'localPoint' contains the position within the UI element's RectTransform
+                    print("Hit UI at local position: " + localPoint);
+
+                    // You can convert this local position to world space if needed
+                    Vector3 worldHitPoint = rectTransform.TransformPoint(localPoint);
+                    return worldHitPoint;
+                }
             }
             else
             {
-                selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+                return new Vector3(hit.point.x, hit.point.y + heightOffset, hit.point.z);
             }
         }
+
+        return Vector3.zero;
     }
 
     private void ChangeAllMaterialsOfParentObject(Transform _parentObject, Material _material, bool _storeCurrentMaterial)
