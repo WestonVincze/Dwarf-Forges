@@ -39,5 +39,4 @@ public class InventorySlot : MonoBehaviour
 
     public RawImage GetSlotImage() { return _slotImage; }
     public GameObject GetBar() {return _barPrefab;}
-    public bool GetIsHighlighted() { return _isHighlighted; }
 }
