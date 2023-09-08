@@ -8,8 +8,9 @@ public class FurnaceManager : MonoBehaviour
 {
     public static FurnaceManager Instance { get; private set; }
 
-    [SerializeField] private int maxDwarvesInFurnace;
-    [SerializeField] private float smeltingTime;
+    [SerializeField] private int maxDwarvesInFurnace = 2;
+    [SerializeField] private float smeltingTime = 4;
+    private TimerManager _timerManager;
 
     private List<DwarfInformation.DWARF_TYPE> storedDwarves = new List<DwarfInformation.DWARF_TYPE>();
 
@@ -25,6 +26,8 @@ public class FurnaceManager : MonoBehaviour
         {
             Instance = this;
         }
+
+        _timerManager = GetComponent<TimerManager>();
     }
 
     public bool AddDwarf(DwarfInformation.DWARF_TYPE _dwarfType)
@@ -32,7 +35,7 @@ public class FurnaceManager : MonoBehaviour
         if (storedDwarves.Count < maxDwarvesInFurnace)
         {
             storedDwarves.Add(_dwarfType);
-            smeltingEndTime = Time.time + smeltingTime;
+            _timerManager.StartTimer(smeltingTime, FinishSmelting);
             print("Added Dwarf Of Type: " + _dwarfType);
             return true;
         }
@@ -42,12 +45,6 @@ public class FurnaceManager : MonoBehaviour
 
     void Update()
     {
-        if (storedDwarves.Count > 0)
-        {
-            if(Time.time >= smeltingEndTime)
-                FinishSmelting();
-        }
-
         if(GameManager.instance.inDebugMode)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
@@ -71,6 +68,9 @@ public class FurnaceManager : MonoBehaviour
 
     void FinishSmelting()
     {
+        if(storedDwarves.Count <= 0)
+            return;
+
         if (storedDwarves.Count == 1)
             FindAnyObjectByType<BarInventory>().GetComponent<BarInventory>().AddInventorySlot(BarCraftingManager.Instance.CraftBar(storedDwarves[0]));
         else if (storedDwarves.Count > 1)
