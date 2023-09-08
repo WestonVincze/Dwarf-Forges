@@ -1,4 +1,10 @@
-
+/*
+ *
+ *  INSTRUCTIONS:
+ *  To Open And Close Inventory Press 'i'
+ *
+ *
+ */
 
 
 using System.Collections.Generic;
