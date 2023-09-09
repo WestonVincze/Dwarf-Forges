@@ -17,12 +17,12 @@ public class RopeHandler : MonoBehaviour
     {
         lineRenderer = GetComponent<LineRenderer>();
     }
-    public void StartPullObject(Collider collider, float ropeLength = 3)
+    public void StartPullObject(Collider collider, Rigidbody connectedBody, float ropeLength = 3)
     {
         target = collider.transform;
         targetCollider = collider;
         rope = gameObject.AddComponent<SpringJoint>();
-        rope.connectedBody = collider.gameObject.GetComponent<Rigidbody>();
+        rope.connectedBody = connectedBody;
         rope.maxDistance = ropeLength;
         rope.enableCollision = true;
 

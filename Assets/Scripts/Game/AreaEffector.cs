@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class AreaEffector : MonoBehaviour
@@ -9,6 +10,7 @@ public class AreaEffector : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        Debug.Log(other.name);
         RigidbodyPointer rbPointer = other.GetComponent<RigidbodyPointer>();
         Rigidbody rb;
         if (rbPointer)
@@ -20,7 +22,7 @@ public class AreaEffector : MonoBehaviour
             rb = other.GetComponentInParent<Rigidbody>();
         }
 
-        if (rb)
+        if (rb) 
         {
             if (effectedObjects.Contains(rb))
                 return;
