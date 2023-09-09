@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class MobBrain : InputHandler
@@ -18,8 +17,8 @@ public class MobBrain : InputHandler
 
     public bool showDebugVision; //Enables debug draw rays
 
-    public float YawThreshold = 5.0f;  // A small angular threshold for yaw direction.
-    public float PitchThreshold = 0.5f; // A small distance threshold for pitch direction.
+    public float yawThreshold = 5.0f;  // A small angular threshold for yaw direction.
+    public float distanceThreshold = 0.5f; // Distance threshold to start moving to target
 
     private BrainState brainState = BrainState.Tracking;
     private RopeHandler ropeHandler;
@@ -27,6 +26,9 @@ public class MobBrain : InputHandler
     public float avoidanceAngle = 90;
     public float avoidanceAngleIncrement = 15;
     public float avoidanceDist = 5;
+
+    public float hopAwayForce = 5;
+    public float hopAwayPitch = 45;
 
     public float avoidanceBiasSwitchCooldown = 1.0f;
     private float nextAvoidanceBiasSwitchTime = 0.0f;
@@ -44,10 +46,19 @@ public class MobBrain : InputHandler
         if (brainState != BrainState.Tracking)
             return;
 
-        if(collider.transform == target)
+
+        RigidbodyPointer rbPointer = collider.GetComponent<RigidbodyPointer>();
+        if (collider.transform == target)
         {
-            ropeHandler.StartPullObject(collider, Random.Range(3,10));
+            ropeHandler.StartPullObject(collider, collider.GetComponent<Rigidbody>(), Random.Range(3,10));
             brainState = BrainState.Pulling;
+            HopTowardsDestination();
+        }
+        else if(rbPointer && rbPointer.rb.transform == target)
+        {
+            ropeHandler.StartPullObject(collider, rbPointer.rb, Random.Range(3, 10));
+            brainState = BrainState.Pulling;
+            HopTowardsDestination();
         }
     }
 
@@ -98,14 +109,15 @@ public class MobBrain : InputHandler
             }
         }
         */
+        angleToTarget += newLookAheadAvoidance;
 
         // "Think" about yaw direction.
-        states.E = angleToTarget > YawThreshold;  // yawLeft
-        states.Q = angleToTarget < -YawThreshold; // yawRight
+        states.E = angleToTarget > yawThreshold;  // yawLeft
+        states.Q = angleToTarget < -yawThreshold; // yawRight
 
         // "Think" about pitch direction.
-        states.W = directionToTarget.magnitude > PitchThreshold;   // pitchForward
-        states.S = directionToTarget.magnitude < -PitchThreshold;  // pitchBackwards
+        states.W = directionToTarget.magnitude > distanceThreshold;   // pitchForward
+        states.S = directionToTarget.magnitude < -distanceThreshold;  // pitchBackwards
 
         // A and D are not used for roll, so they are always false.
         states.A = false;
@@ -280,6 +292,15 @@ public class MobBrain : InputHandler
         }
 
         return retVal;
+    }
+
+    void HopTowardsDestination()
+    {
+        Vector3 hopForce = new Vector3(stableTransform.position.x, stableTransform.position.y, 1000);
+        hopForce = Quaternion.AngleAxis(hopAwayPitch, Vector3.right) * hopForce;
+        
+        hopForce = hopForce.normalized * hopAwayForce;
+        GetComponentInChildren<Rigidbody>().AddForce(hopForce, ForceMode.Impulse);
     }
 
 

@@ -199,11 +199,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   stableTransform: {fileID: 1772338770679022829}
-  YawThreshold: 5
-  PitchThreshold: 0.5
+  showDebugVision: 0
+  yawThreshold: 0
+  distanceThreshold: 0.5
   avoidanceAngle: 90
   avoidanceAngleIncrement: 15
-  avoidanceDist: 5
+  avoidanceDist: 15
+  hopAwayForce: 10
+  hopAwayPitch: -45
+  avoidanceBiasSwitchCooldown: 1
 --- !u!1 &8936669548832992856 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6116561255353786137, guid: 07b17745f5be72b498524e451f4dca4a, type: 3}
