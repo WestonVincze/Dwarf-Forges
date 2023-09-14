@@ -12,7 +12,7 @@ public class FurnaceManager : MonoBehaviour
     [SerializeField] private float smeltingTime = 4;
     private TimerManager _timerManager;
 
-    private List<DwarfInformation.DWARF_TYPE> storedDwarves = new List<DwarfInformation.DWARF_TYPE>();
+    private List<DWARF_TYPE> storedDwarves = new List<DWARF_TYPE>();
 
     private float smeltingEndTime;
 
@@ -36,24 +36,24 @@ public class FurnaceManager : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                AddDwarf(DwarfInformation.DWARF_TYPE.DURABLE);
+                AddDwarf(DWARF_TYPE.DURABLE);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                AddDwarf(DwarfInformation.DWARF_TYPE.LIGHT);
+                AddDwarf(DWARF_TYPE.LIGHT);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha3))
             {
-                AddDwarf(DwarfInformation.DWARF_TYPE.STRONG);
+                AddDwarf(DWARF_TYPE.STRONG);
             }
             else if (Input.GetKeyDown(KeyCode.Alpha4))
             {
-                AddDwarf(DwarfInformation.DWARF_TYPE.VOLATILE);
+                AddDwarf(DWARF_TYPE.VOLATILE);
             }
         }
     }
 
-    public bool AddDwarf(DwarfInformation.DWARF_TYPE _dwarfType)
+    public bool AddDwarf(DWARF_TYPE _dwarfType)
     {
         if (storedDwarves.Count < maxDwarvesInFurnace)
         {
@@ -83,8 +83,6 @@ public class FurnaceManager : MonoBehaviour
 
     public bool IsFurnaceFull()
     {
-        if (storedDwarves.Count >= maxDwarvesInFurnace)
-            return true;
-        return false;
+        return storedDwarves.Count >= maxDwarvesInFurnace;
     }
 }

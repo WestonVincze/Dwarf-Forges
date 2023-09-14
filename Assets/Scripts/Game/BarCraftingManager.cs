@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class BarCraftingManager : MonoBehaviour
 {
 
@@ -23,7 +24,7 @@ public class BarCraftingManager : MonoBehaviour
         }
     }
 
-    public GameObject CraftBar(DwarfInformation.DWARF_TYPE _primaryAttribute, DwarfInformation.DWARF_TYPE _secondaryAttribute = DwarfInformation.DWARF_TYPE.NONE)
+    public GameObject CraftBar(DWARF_TYPE _primaryAttribute, DWARF_TYPE _secondaryAttribute = DWARF_TYPE.NONE)
     {
         string currentRecipeString = _primaryAttribute.ToString().ToLower() + _secondaryAttribute.ToString().ToLower();
 
@@ -35,15 +36,15 @@ public class BarCraftingManager : MonoBehaviour
             }
         }
 
-        switch (_primaryAttribute.ToString().ToLower())
+        switch (_primaryAttribute)
         {
-            case "volatile":
+            case DWARF_TYPE.VOLATILE:
                 return volatileBar;
-            case "durable":
+            case DWARF_TYPE.DURABLE:
                 return durableBar;
-            case "light":
+            case DWARF_TYPE.LIGHT:
                 return lightBar;
-            case "strong":
+            case DWARF_TYPE.STRONG:
                 return strongBar;
             default: return null;
         }

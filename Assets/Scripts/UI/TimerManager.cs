@@ -30,18 +30,17 @@ public class TimerManager : MonoBehaviour
         _fillImage.fillAmount = 0;
     }
 
-    void FixedUpdate()
+    void Update()
     {
-        if (_timerStarted)
+        if (!_timerStarted) return;
+
+        if (_fillImage != null)
         {
-            if (_fillImage != null)
-            {
-                float elapsedTime = Time.time - _startTime;
-                _fillImage.fillAmount = (elapsedTime/(_endTime - _startTime));
-            }
+            float elapsedTime = Time.time - _startTime;
+            _fillImage.fillAmount = (elapsedTime/(_endTime - _startTime));
         }
 
-        if (Time.time >= _endTime && _timerStarted)
+        if (Time.time >= _endTime)
         {
             _completedAction();
             _fillImage.fillAmount = 0;

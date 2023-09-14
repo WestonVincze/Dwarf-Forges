@@ -146,16 +146,16 @@ public class BarInventory : MonoBehaviour
 
     void SpawnSlotPrefab(InventorySlot slot, UnityEngine.Vector3 spawnLocation)
     {
-        GameObject spawnedBar = Instantiate(slot.GetBar(), spawnLocation, Quaternion.identity);
+        GameObject spawnedBar = Instantiate(slot.barPrefab, spawnLocation, Quaternion.identity);
         FindObjectOfType<DragAndDrop>().GetComponent<DragAndDrop>().PickUpItem(spawnedBar);
 
-        int currentBarAmount = _slots[slot.GetBar().name];
+        int currentBarAmount = _slots[slot.barPrefab.name];
 
-        _slots[slot.GetBar().name] = --currentBarAmount;
+        _slots[slot.barPrefab.name] = --currentBarAmount;
 
-        if (_slots[slot.GetBar().name] <= 0)
+        if (_slots[slot.barPrefab.name] <= 0)
         {
-            _slots.Remove(slot.GetBar().name);
+            _slots.Remove(slot.barPrefab.name);
             Destroy(slot.gameObject);
         }
     }

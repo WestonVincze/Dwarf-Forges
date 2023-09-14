@@ -37,6 +37,6 @@ public class InventorySlot : MonoBehaviour
         _slotImage.color = new Color(_slotImage.color.r, _slotImage.color.g, _slotImage.color.b, 0.25f);
     }
 
-    public RawImage GetSlotImage() { return _slotImage; }
-    public GameObject GetBar() {return _barPrefab;}
+    public GameObject barPrefab {get => _barPrefab;}
+    public RawImage slotImage {get => _slotImage;}
 }

@@ -16,7 +16,7 @@ public class GameManager : MonoBehaviour
     }
     public bool inDebugMode
     {
-        get { return _inDebugMode; }
+        get => _inDebugMode;
     }
 
     public GameMode defaultGameMode = GameMode.Normal;
