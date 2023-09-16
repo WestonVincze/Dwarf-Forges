@@ -1,6 +1,8 @@
 using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.UI;
 
 /*
  * Instructions On How Drag And Drop Works
@@ -53,6 +55,7 @@ public class DragAndDrop : MonoBehaviour
     [Header("LayerMasks")]
     // TODO: update these LayerMask's to be able to work with multiple layers
     [SerializeField] private LayerMask draggableLayerMask;
+    [SerializeField] private LayerMask furnaceLayerMask;
     [SerializeField] private LayerMask ignoredLayerMask;
 
     private int originalLayer;
@@ -69,16 +72,21 @@ public class DragAndDrop : MonoBehaviour
     [Header("Movement")]
     [SerializeField] private float heightOffset;
     [SerializeField] private float lerpAmount;
+    [SerializeField] private bool usePIDController;
 
     private GameObject selectedGameObject;
     private Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
     private Dictionary<Transform, int> originalLayers = new Dictionary<Transform, int>();
     private List<Transform> childObjects = new List<Transform>();
 
+    private PIDController pidController;
+
     void Start()
     {
         GameManager.instance.AddEnterAction(GameManager.GameMode.Crafting, () => grabType = GRAB_TYPE.CRAFTING_GRAB);
         GameManager.instance.AddExitAction(GameManager.GameMode.Crafting, () => grabType = GRAB_TYPE.PLAY_AREA_GRAB);
+
+        pidController = new PIDController();
     }
 
     private void Update()
@@ -144,45 +152,72 @@ public class DragAndDrop : MonoBehaviour
 
                     if (!_sameObject && selectedGameObject)
                     {
-                        UnHighlightObject(selectedGameObject.transform); //If the highlighted object and the object that the cursor is on is not the same, unhighlight the highlighted object
+                        if(selectedGameObject.transform)
+                            UnHighlightObject(selectedGameObject.transform); //If the highlighted object and the object that the cursor is on is not the same, unhighlight the highlighted object
                     }
                 }
             }
             else if (grabState == GRAB_STATE.GRABBED) //If the player has an object picked up continue logic
             {
-                MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
-
-                if (selectedGameObject.GetComponent<MobBrain>())
-                {
-                    CheckForForge();
-                }
+                if(!selectedGameObject.GetComponent<Rigidbody>() || !usePIDController)
+                    MoveToCursor(); //Moves the object to the cursor position with a set height offset from wherever the raycast sits
 
                 if (Input.GetMouseButtonUp(0)) //TODO: CHANGE INPUT TO USE NEW INPUT SYSTEM
                 {
-                    DropItem(); //If they let go of the mouse button, drop the object
+                    if (selectedGameObject.GetComponent<DwarfInformation>() && CheckForForge())
+                    {
+                        if (FurnaceManager.Instance.AddDwarf(selectedGameObject.GetComponent<DwarfInformation>()
+                                .GetDwarfType()))
+                        {
+                            Destroy(selectedGameObject);
+                            originalMaterials.Clear();
+                            originalLayers.Clear();
+                            selectedGameObject = null;
+                            grabState = GRAB_STATE.EMPTY_HANDED;
+                        }
+                        else if (FurnaceManager.Instance.IsFurnaceFull())
+                        {
+                            DropItem();
+                        }
+
+                    }
+                    else
+                    {
+                        DropItem(); //If they let go of the mouse button, drop the object
+                    }
                 }
             }
         }
     }
 
-    void CheckForForge()
+    void FixedUpdate()
     {
-        if (!selectedGameObject) return;
+        if(selectedGameObject)
+            if(selectedGameObject.GetComponent<Rigidbody>() && usePIDController && grabState == GRAB_STATE.GRABBED)
+                MoveToCursor();
+    }
 
-        Ray ray = new Ray(selectedGameObject.transform.position, Vector3.down);
-        RaycastHit hit;
+    bool CheckForForge()
+    {
+        if (selectedGameObject)
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
         Debug.DrawRay(ray.origin, ray.direction * 100.0f);
 
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity, ~ignoredLayerMask))
-        {
-
-            GameObject forge = FindParentObject(hit.transform, "Furnace")?.gameObject;
-            if (forge)
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, furnaceLayerMask))
             {
-                //TODO: Add Dropping Into Forge
+
+                GameObject forge = FindParentObject(hit.transform, "Furnace")?.gameObject;
+                if (forge)
+                {
+                  return true;
+                }
             }
         }
+
+        return false;
     }
 
     private void HighlightObject(Transform _parentObject)
@@ -205,7 +240,22 @@ public class DragAndDrop : MonoBehaviour
         ChangeAllLayersOfParentObject(selectedGameObject.transform);
         if (selectedGameObject.GetComponent<Rigidbody>())
         {
-            selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
+            if(!usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+                selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
+        }
+        grabState = GRAB_STATE.GRABBED;
+    }
+
+    public void PickUpItem(GameObject _objectToPickUp)
+    {
+        selectedGameObject = _objectToPickUp;
+
+        ChangeAllMaterialsOfParentObject(selectedGameObject.transform, grabbedMaterial, true);
+        ChangeAllLayersOfParentObject(selectedGameObject.transform);
+        if (selectedGameObject.GetComponent<Rigidbody>())
+        {
+            if (!usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+                selectedGameObject.GetComponent<Rigidbody>().isKinematic = true;
         }
         grabState = GRAB_STATE.GRABBED;
     }
@@ -216,21 +266,64 @@ public class DragAndDrop : MonoBehaviour
         RestoreOriginalLayers();
         if (selectedGameObject.GetComponent<Rigidbody>())
         {
-            selectedGameObject.GetComponent<Rigidbody>().isKinematic = false;
+            if(!usePIDController && selectedGameObject.GetComponent<Rigidbody>()) 
+                selectedGameObject.GetComponent<Rigidbody>().isKinematic = false;
         }
         grabState = GRAB_STATE.EMPTY_HANDED;
     }
 
-    private void MoveToCursor() //TODO: CHANGE THE MOVEMENT TO USE RIGIDBODY WITH PID CONTROLLER
+    private void MoveToCursor()
     {
+        Vector3 newPosition = GetCursorPosition();
+
+        if (usePIDController && selectedGameObject.GetComponent<Rigidbody>())
+        {
+            pidController.targetPos = newPosition;
+
+            selectedGameObject.GetComponent<Rigidbody>().AddForce(pidController.Update(selectedGameObject.transform.position,
+                selectedGameObject.GetComponent<Rigidbody>().velocity), ForceMode.Acceleration);
+        }
+        else
+        {
+            selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+        }
+    }
+
+    private Vector3 GetCursorPosition()
+    {
+        // Create a ray from the mouse position
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
+        // Perform a raycast into the UI
         if (Physics.Raycast(ray, out hit, 100.0f, ~ignoredLayerMask))
         {
-            Vector3 newPosition = new Vector3(hit.point.x, hit.point.y + heightOffset, hit.point.z);
-            selectedGameObject.transform.position = Vector3.Lerp(selectedGameObject.transform.position, newPosition, lerpAmount * Time.deltaTime);
+            // Check if the ray hit a UI element
+            RectTransform rectTransform = hit.transform.GetComponent<RectTransform>();
+
+            if (rectTransform != null)
+            {
+                // Get the local position of the hit point within the RectTransform
+                Vector2 localPoint;
+
+                if (RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, hit.point, Camera.main,
+                        out localPoint))
+                {
+                    // Now, 'localPoint' contains the position within the UI element's RectTransform
+                    print("Hit UI at local position: " + localPoint);
+
+                    // You can convert this local position to world space if needed
+                    Vector3 worldHitPoint = rectTransform.TransformPoint(localPoint);
+                    return worldHitPoint;
+                }
+            }
+            else
+            {
+                return new Vector3(hit.point.x, hit.point.y + heightOffset, hit.point.z);
+            }
         }
+
+        return Vector3.zero;
     }
 
     private void ChangeAllMaterialsOfParentObject(Transform _parentObject, Material _material, bool _storeCurrentMaterial)
