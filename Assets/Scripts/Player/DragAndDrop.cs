@@ -212,8 +212,7 @@ public class DragAndDrop : MonoBehaviour
                 GameObject forge = FindParentObject(hit.transform, "Furnace")?.gameObject;
                 if (forge)
                 {
-                    //TODO: Add Dropping Into Forge
-                    return true;
+                  return true;
                 }
             }
         }
@@ -273,7 +272,7 @@ public class DragAndDrop : MonoBehaviour
         grabState = GRAB_STATE.EMPTY_HANDED;
     }
 
-    private void MoveToCursor() //TODO: CHANGE THE MOVEMENT TO USE RIGIDBODY WITH PID CONTROLLER
+    private void MoveToCursor()
     {
         Vector3 newPosition = GetCursorPosition();
 
