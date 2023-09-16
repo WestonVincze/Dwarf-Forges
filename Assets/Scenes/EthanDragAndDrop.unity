@@ -2502,7 +2502,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc368be33c1bb0d478b825f457bec12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabType: 1
+  _grabType: 2
   grabState: 0
   draggableLayerMask:
     serializedVersion: 2

@@ -494,10 +494,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   torqueStrength: {x: 5, y: 7, z: 5}
-  impulseStrength: 20
-  impulseCooldown: 0.2
-  referenceTransform: {fileID: 2509000321643738103}
-  tweenSpeed: 0.05
+  stableTransform: {fileID: 1511383092771581954}
+  turnSpeed: 1.5
+  maxAngularVelocity: 10
 --- !u!114 &9178763710267140258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,6 +526,9 @@ MonoBehaviour:
   stableTransform: {fileID: 1511383092771581954}
   YawThreshold: 5
   PitchThreshold: 0.5
+  avoidanceAngle: 90
+  avoidanceAngleIncrement: 15
+  avoidanceDist: 5
 --- !u!114 &7106079655771600090
 MonoBehaviour:
   m_ObjectHideFlags: 0

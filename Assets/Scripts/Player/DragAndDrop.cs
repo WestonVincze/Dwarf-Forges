@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.HID;
@@ -24,14 +23,14 @@ using UnityEngine.UI;
 
 public class DragAndDrop : MonoBehaviour
 {
-    private enum GRAB_TYPE
+    public enum GRAB_TYPE
     {
         NONE,
         PLAY_AREA_GRAB,
         CRAFTING_GRAB
     }
 
-    private enum GRAB_STATE
+    public enum GRAB_STATE
     {
         EMPTY_HANDED,
         HIGHLIGHTED,
@@ -39,18 +38,30 @@ public class DragAndDrop : MonoBehaviour
     }
 
     [Header("Enums")]
-    [SerializeField] private GRAB_TYPE grabType;
+    [SerializeField] private GRAB_TYPE _grabType;
     [SerializeField] private GRAB_STATE grabState;
 
+    public GRAB_TYPE grabType 
+    {
+        get => _grabType;
+        set 
+        {
+            if (value == _grabType) return;
+            if (grabState == GRAB_STATE.GRABBED) DropItem();
+            _grabType = value;
+        }
+    }
+
     [Header("LayerMasks")]
+    // TODO: update these LayerMask's to be able to work with multiple layers
     [SerializeField] private LayerMask draggableLayerMask;
     [SerializeField] private LayerMask furnaceLayerMask;
     [SerializeField] private LayerMask ignoredLayerMask;
 
     private int originalLayer;
 
-    [SerializeField] private string playAreaTag;
-    [SerializeField] private string craftingTag;
+    [SerializeField] private string playAreaTag = "SelectablePlayAreaParent";
+    [SerializeField] private string craftingTag = "SelectableCraftingParent";
 
     private int previousLayer;
 
@@ -72,8 +83,8 @@ public class DragAndDrop : MonoBehaviour
 
     void Start()
     {
-        GameManager.instance.AddEnterAction(GameManager.GameMode.Crafting, SetToCraftingMode);
-        GameManager.instance.AddExitAction(GameManager.GameMode.Crafting, SetToPlayAreaMode);
+        GameManager.instance.AddEnterAction(GameManager.GameMode.Crafting, () => grabType = GRAB_TYPE.CRAFTING_GRAB);
+        GameManager.instance.AddExitAction(GameManager.GameMode.Crafting, () => grabType = GRAB_TYPE.PLAY_AREA_GRAB);
 
         pidController = new PIDController();
     }
@@ -193,7 +204,7 @@ public class DragAndDrop : MonoBehaviour
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
 
-            Debug.DrawRay(ray.origin, ray.direction * 100.0f);
+        Debug.DrawRay(ray.origin, ray.direction * 100.0f);
 
             if (Physics.Raycast(ray, out hit, Mathf.Infinity, furnaceLayerMask))
             {
@@ -434,19 +445,5 @@ public class DragAndDrop : MonoBehaviour
             childList.AddRange(GetAllChildObjects(child));
         }
         return childList;
-    }
-
-    void SetToCraftingMode()
-    {
-        if (grabState == GRAB_STATE.GRABBED) DropItem();
-
-        grabType = GRAB_TYPE.CRAFTING_GRAB;
-    }
-
-    void SetToPlayAreaMode()
-    {
-        if (grabState == GRAB_STATE.GRABBED) DropItem();
-
-        grabType = GRAB_TYPE.PLAY_AREA_GRAB;
     }
 }

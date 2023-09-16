@@ -17,15 +17,21 @@ public class RopeHandler : MonoBehaviour
     {
         lineRenderer = GetComponent<LineRenderer>();
     }
-    public void StartPullObject(Collider collider, float ropeLength = 3)
+    public void StartPullObject(Collider collider, Rigidbody connectedBody, float ropeLength = 3)
     {
         target = collider.transform;
         targetCollider = collider;
         rope = gameObject.AddComponent<SpringJoint>();
-        rope.connectedBody = collider.gameObject.GetComponent<Rigidbody>();
+        rope.connectedBody = connectedBody;
         rope.maxDistance = ropeLength;
         rope.enableCollision = true;
+
+        Vector3 connectedRopeAnchorPos = targetCollider.ClosestPointOnBounds(new Vector3(transform.position.x, targetCollider.bounds.min.y - 0.1f, transform.position.z));
+        targetOffset = connectedRopeAnchorPos - target.position;
+
         rope.autoConfigureConnectedAnchor = false;
+        rope.anchor = Vector3.zero;
+        rope.connectedAnchor = targetOffset;
 
         lineRenderer.enabled = true;
 
@@ -66,8 +72,9 @@ public class RopeHandler : MonoBehaviour
         connectedRopeAnchorPos.y = targetCollider.bounds.min.y;
         */
 
-        Vector3 connectedRopeAnchorPos = targetCollider.ClosestPointOnBounds(new Vector3(transform.position.x, targetCollider.bounds.min.y - 0.1f, transform.position.z));
-        targetOffset = connectedRopeAnchorPos - target.position;
+        //Vector3 connectedRopeAnchorPos = targetCollider.ClosestPointOnBounds(new Vector3(transform.position.x, targetCollider.bounds.min.y - 0.1f, transform.position.z));
+        //targetOffset = connectedRopeAnchorPos - target.position;
+        Vector3 connectedRopeAnchorPos = target.position + targetOffset;
 
         lineRenderer.SetPosition(0, transform.position);
         lineRenderer.SetPosition(lineRenderer.positionCount - 1, connectedRopeAnchorPos);
@@ -80,6 +87,7 @@ public class RopeHandler : MonoBehaviour
         }
     }
 
+    /*
     private void FixedUpdate()
     {
         if (!pulling)
@@ -87,4 +95,5 @@ public class RopeHandler : MonoBehaviour
         
         rope.connectedAnchor = targetOffset;
     }
+    */
 }

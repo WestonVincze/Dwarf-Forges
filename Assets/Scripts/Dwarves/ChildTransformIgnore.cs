@@ -26,6 +26,16 @@ public class ChildTransformIgnore : MonoBehaviour
 
     private void LateUpdate()
     {
+        LockHandle();
+    }
+
+    private void FixedUpdate()
+    {
+        LockHandle();
+    }
+
+    private void LockHandle()
+    {
         foreach (ChildLockSettings settings in childSettings)
         {
             if (settings.child == null)

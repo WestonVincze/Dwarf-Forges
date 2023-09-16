@@ -23,6 +23,7 @@ public class MobSpawner : MonoBehaviour
     public List<SpawnableMob> mobsToSpawn = new List<SpawnableMob>();
     public List<SpawnLocation> spawnLocations = new List<SpawnLocation>();
     public float overallSpawnRate = 1f;  // Time in seconds.
+    public bool showDebugVision = false;
 
     private float spawnTimer = 0f;
 
@@ -60,11 +61,13 @@ public class MobSpawner : MonoBehaviour
             GameObject mob = Instantiate(mobToSpawn.mobPrefab, spawnPosition, Quaternion.identity);
 
             mob.transform.parent = transform;
+            //mob.transform.LookAt(new Vector3(mobTarget.position.x, spawnPosition.y, mobTarget.position.y));
 
-            MobBrain mobBrain = mob.GetComponent<MobBrain>();
+            MobBrain mobBrain = mob.GetComponentInChildren<MobBrain>();
             mobBrain.target = mobTarget;
-            mob.GetComponent<Destructible>().OnDeath += mobBrain.Die;
-            mob.GetComponent<Destructible>().OnDeath += Test;
+            mobBrain.showDebugVision = showDebugVision;
+            mob.GetComponentInChildren<Destructible>().OnDeath += mobBrain.Die;
+            mob.GetComponentInChildren<Destructible>().OnDeath += Test;
         }
     }
 
