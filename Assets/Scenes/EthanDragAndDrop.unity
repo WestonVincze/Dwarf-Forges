@@ -1646,6 +1646,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1078227143302711801, guid: 1c9e966064002fb449324217326c26b6, type: 3}
+      propertyPath: mobsToSpawn.Array.data[0].mobPrefab
+      value: 
+      objectReference: {fileID: 2729868606764708411, guid: 8ed284038aabf664e989b2949979524f, type: 3}
     - target: {fileID: 5501756994770087451, guid: 1c9e966064002fb449324217326c26b6, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -2502,7 +2506,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc368be33c1bb0d478b825f457bec12e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _grabType: 2
+  _grabType: 1
   grabState: 0
   draggableLayerMask:
     serializedVersion: 2

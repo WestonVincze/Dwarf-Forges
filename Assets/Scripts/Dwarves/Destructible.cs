@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Destructible : DestroyableMonoBehavior
@@ -16,6 +17,18 @@ public class Destructible : DestroyableMonoBehavior
     {
         // Initialize currentHealth with maxHealth at the start
         currentHealth = maxHealth;
+    }
+
+    void Update()
+    {
+      if (GameManager.instance.inDebugMode)
+      {
+        //Debugging
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+          TakeDamage(50);
+        }
+      }
     }
 
     // Function for handling damage
@@ -47,8 +60,10 @@ public class Destructible : DestroyableMonoBehavior
         OnDeath?.Invoke();
         OnDeath = null;
 
+        DragAndDrop.instance.ChangeAllLayersOfParentObject(transform, DragAndDrop.instance.draggableLayerMask);
+
         //TODO: Implement death visuals. Either spawn in a new object
         //or delay to the end of the death animation before destroy.
-        this.Destroy(3);
+        //this.Destroy(3);
     }
 }
