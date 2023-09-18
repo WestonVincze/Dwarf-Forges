@@ -688,7 +688,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7529aec9cc417e9439207c946fc205c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inDebugMode: 0
+  _inDebugMode: 1
   defaultGameMode: 2
 --- !u!4 &453636803
 Transform:
@@ -2508,13 +2508,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grabType: 1
   grabState: 0
-  draggableLayerMask:
+  _draggableLayerMask:
     serializedVersion: 2
     m_Bits: 128
-  furnaceLayerMask:
+  _furnaceLayerMask:
     serializedVersion: 2
     m_Bits: 256
-  ignoredLayerMask:
+  _ignoredLayerMask:
     serializedVersion: 2
     m_Bits: 64
   playAreaTag: SelectablePlayAreaParent
