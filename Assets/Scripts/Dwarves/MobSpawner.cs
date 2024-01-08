@@ -46,11 +46,6 @@ public class MobSpawner : MonoBehaviour
         }
     }
 
-    private void Test()
-    {
-        Debug.Log("dead dwarf");
-    }
-
     private void SpawnMobAtLocation(SpawnLocation location)
     {
         Vector3 spawnPosition = GetSpawnPositionWithinBox(location);
@@ -67,7 +62,6 @@ public class MobSpawner : MonoBehaviour
             mobBrain.target = mobTarget;
             mobBrain.showDebugVision = showDebugVision;
             mob.GetComponentInChildren<Destructible>().OnDeath += mobBrain.Die;
-            mob.GetComponentInChildren<Destructible>().OnDeath += Test;
         }
     }
 
