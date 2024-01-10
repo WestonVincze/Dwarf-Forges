@@ -13,6 +13,10 @@ public abstract class DestroyableMonoBehavior : MonoBehaviour
 
     public void Destroy(float time = 0)
     {
+        Destroy(gameObject, time);
+
+        /*
+        //Old code to pass destruction upwards, caused issues.. Needs to determine if parent should be informed in a more robust fashion
         if(gameObject.transform.parent)
         {
             Destroy(gameObject.transform.parent, time);
@@ -21,5 +25,6 @@ public abstract class DestroyableMonoBehavior : MonoBehaviour
         {
             Destroy(gameObject, time);
         }
+        */
     }
 }
