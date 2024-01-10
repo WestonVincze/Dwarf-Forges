@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(InputHandler))]
-public class TorqueController: MonoBehaviour
+public class TorqueController_Old3 : MonoBehaviour
 {
   public Vector3 torqueStrength = new Vector3(5.0f, 0.0f, 5.0f);
   public float motorVelocity = 100;
