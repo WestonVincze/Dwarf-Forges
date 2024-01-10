@@ -54,9 +54,15 @@ public class DragAndDrop : MonoBehaviour
 
     [Header("LayerMasks")]
     // TODO: update these LayerMask's to be able to work with multiple layers
-    [SerializeField] private LayerMask draggableLayerMask;
-    [SerializeField] private LayerMask furnaceLayerMask;
-    [SerializeField] private LayerMask ignoredLayerMask;
+    [SerializeField] private LayerMask _draggableLayerMask;
+    [SerializeField] private LayerMask _furnaceLayerMask;
+    [SerializeField] private LayerMask _ignoredLayerMask;
+
+    public LayerMask draggableLayerMask
+    {
+      get => _draggableLayerMask;
+      set { _draggableLayerMask = value; }
+    }
 
     private int originalLayer;
 
@@ -75,13 +81,27 @@ public class DragAndDrop : MonoBehaviour
     [SerializeField] private bool usePIDController;
 
     private GameObject selectedGameObject;
-    private Dictionary<Transform, Material> originalMaterials = new Dictionary<Transform, Material>();
+    private Dictionary<Transform, Material[]> originalMaterials = new Dictionary<Transform, Material[]>();
     private Dictionary<Transform, int> originalLayers = new Dictionary<Transform, int>();
-    private List<Transform> childObjects = new List<Transform>();
+    private List<Transform> _meshObjects = new List<Transform>();
 
     private PIDController pidController;
 
-    void Start()
+    public static DragAndDrop instance { get; private set; }
+
+    void Awake()
+    {
+      if (instance != null && instance != this)
+      {
+        Destroy(this);
+      }
+      else
+      {
+        instance = this;
+      }
+  }
+
+  void Start()
     {
         GameManager.instance.AddEnterAction(GameManager.GameMode.Crafting, () => grabType = GRAB_TYPE.CRAFTING_GRAB);
         GameManager.instance.AddExitAction(GameManager.GameMode.Crafting, () => grabType = GRAB_TYPE.PLAY_AREA_GRAB);
@@ -101,7 +121,7 @@ public class DragAndDrop : MonoBehaviour
             //If the player hasn't highlighted or grabbed an object, check to see if they are over an object that can be selected
             if (grabState == GRAB_STATE.EMPTY_HANDED)
             {
-                if (Physics.Raycast(ray, out hit, Mathf.Infinity, draggableLayerMask)) //Raycast to find objects that can be dragged
+                if (Physics.Raycast(ray, out hit, Mathf.Infinity, _draggableLayerMask)) //Raycast to find objects that can be dragged
                 {
                     if (grabType == GRAB_TYPE.PLAY_AREA_GRAB) //Checks if the object is apart of the play area and if the player can grab from the play area
                     {
@@ -140,7 +160,7 @@ public class DragAndDrop : MonoBehaviour
                     }
                     else
                     {
-                        foreach (Transform child in childObjects)
+                        foreach (Transform child in _meshObjects)
                         {
                             if (hit.transform == child)
                             {
@@ -206,7 +226,7 @@ public class DragAndDrop : MonoBehaviour
 
         Debug.DrawRay(ray.origin, ray.direction * 100.0f);
 
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity, furnaceLayerMask))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, _furnaceLayerMask))
             {
 
                 GameObject forge = FindParentObject(hit.transform, "Furnace")?.gameObject;
@@ -237,7 +257,7 @@ public class DragAndDrop : MonoBehaviour
     private void PickUpItem()
     {
         ChangeAllMaterialsOfParentObject(selectedGameObject.transform, grabbedMaterial, false);
-        ChangeAllLayersOfParentObject(selectedGameObject.transform);
+        ChangeAllLayersOfParentObject(selectedGameObject.transform, _ignoredLayerMask);
         if (selectedGameObject.GetComponent<Rigidbody>())
         {
             if(!usePIDController && selectedGameObject.GetComponent<Rigidbody>())
@@ -251,7 +271,7 @@ public class DragAndDrop : MonoBehaviour
         selectedGameObject = _objectToPickUp;
 
         ChangeAllMaterialsOfParentObject(selectedGameObject.transform, grabbedMaterial, true);
-        ChangeAllLayersOfParentObject(selectedGameObject.transform);
+        ChangeAllLayersOfParentObject(selectedGameObject.transform, _ignoredLayerMask);
         if (selectedGameObject.GetComponent<Rigidbody>())
         {
             if (!usePIDController && selectedGameObject.GetComponent<Rigidbody>())
@@ -296,7 +316,7 @@ public class DragAndDrop : MonoBehaviour
         RaycastHit hit;
 
         // Perform a raycast into the UI
-        if (Physics.Raycast(ray, out hit, 100.0f, ~ignoredLayerMask))
+        if (Physics.Raycast(ray, out hit, 100.0f, ~_ignoredLayerMask))
         {
             // Check if the ray hit a UI element
             RectTransform rectTransform = hit.transform.GetComponent<RectTransform>();
@@ -328,57 +348,98 @@ public class DragAndDrop : MonoBehaviour
 
     private void ChangeAllMaterialsOfParentObject(Transform _parentObject, Material _material, bool _storeCurrentMaterial)
     {
-        childObjects = GetAllChildObjects(_parentObject);
+        _meshObjects = GetAllChildObjects(_parentObject);
+        _meshObjects.Add(_parentObject);
 
-        if (_parentObject.GetComponent<MeshRenderer>())
+        List<Transform> objectsToRemove = new List<Transform>();
+
+        foreach (Transform obj in _meshObjects)
         {
-            if (_storeCurrentMaterial)
-                originalMaterials[_parentObject] = _parentObject.GetComponent<MeshRenderer>().material;
-            _parentObject.GetComponent<MeshRenderer>().material = _material;
+          if (!((obj.GetComponent<MeshRenderer>() != null && obj.GetComponent<MeshRenderer>().enabled) ||
+                (obj.GetComponent<SkinnedMeshRenderer>() != null && obj.GetComponent<SkinnedMeshRenderer>().enabled)))
+          {
+            objectsToRemove.Add(obj);
+          }
         }
 
-        foreach (Transform child in childObjects)
+        foreach (Transform objToRemove in objectsToRemove)
         {
-            MeshRenderer meshRenderer = child.GetComponent<MeshRenderer>();
-            if (meshRenderer)
+          _meshObjects.Remove(objToRemove);
+        }
+        
+        foreach (Transform obj in _meshObjects)
+        {
+          print(obj.name);
+
+          if (obj.GetComponent<MeshRenderer>())
+          {
+            MeshRenderer meshRenderer = obj.GetComponent<MeshRenderer>();
+            Material[] materials = meshRenderer.materials;
+
+            for (int i = 0; i < materials.Length; i++)
             {
-                if (_storeCurrentMaterial)
-                    originalMaterials[child] = meshRenderer.material;
-                meshRenderer.material = _material;
+              print(materials[i].name);
+              materials[i] = _material;
             }
+
+            if(_storeCurrentMaterial)
+              originalMaterials[obj] = meshRenderer.materials;
+            meshRenderer.materials = materials;
         }
+          else if (obj.GetComponent<SkinnedMeshRenderer>())
+          {
+            SkinnedMeshRenderer skinnedRenderer = obj.GetComponent<SkinnedMeshRenderer>();
+            Material[] materials = skinnedRenderer.materials;
+
+            for (int i = 0; i < materials.Length; i++)
+            {
+              print(materials[i].name);
+              materials[i] = _material;
+            }
+
+            if(_storeCurrentMaterial)
+              originalMaterials[obj] = skinnedRenderer.materials;
+            skinnedRenderer.materials = materials;
+        }
+      }
     }
 
     private void RestoreOriginalMaterials()
     {
         foreach (var kvp in originalMaterials)
         {
+          if (kvp.Key.GetComponent<MeshRenderer>())
+          {
             MeshRenderer meshRenderer = kvp.Key.GetComponent<MeshRenderer>();
             if (meshRenderer != null)
             {
-                meshRenderer.material = kvp.Value;
+              meshRenderer.materials = kvp.Value;
             }
+          }
+          else if (kvp.Key.GetComponent<SkinnedMeshRenderer>())
+          {
+            SkinnedMeshRenderer meshRenderer = kvp.Key.GetComponent<SkinnedMeshRenderer>();
+            if (meshRenderer != null)
+            {
+              meshRenderer.materials = kvp.Value;
+            }
+          }
         }
     }
 
-    private void ChangeAllLayersOfParentObject(Transform _parentObject)
+    public void ChangeAllLayersOfParentObject(Transform _parentObject, LayerMask newLayer)
     {
-        childObjects = GetAllChildObjects(_parentObject);
-        int newLayer = (int)Mathf.Log(ignoredLayerMask.value, 2);
+      _meshObjects = GetAllChildObjects(_parentObject);
+      _meshObjects.Add(_parentObject);
+      int layerValue = (int)Mathf.Log(newLayer.value, 2);
 
-        if (_parentObject.GetComponent<Collider>())
+        foreach (Transform obj in _meshObjects)
         {
-            originalLayers[_parentObject] = _parentObject.gameObject.layer;
-            _parentObject.gameObject.layer = newLayer;
-        }
-
-        foreach (Transform child in childObjects)
-        {
-            Collider collider = child.GetComponent<Collider>();
+            Collider collider = obj.GetComponent<Collider>();
             if (collider)
             {
-                originalLayers[child] = child.gameObject.layer;
-                child.gameObject.layer = newLayer;
+                originalLayers[obj] = obj.gameObject.layer;
+                obj.gameObject.layer = layerValue;
             }
         }
     }
@@ -435,7 +496,7 @@ public class DragAndDrop : MonoBehaviour
         return null;
     }
 
-    private List<Transform> GetAllChildObjects(Transform parent)
+    public List<Transform> GetAllChildObjects(Transform parent)
     {
         List<Transform> childList = new List<Transform>();
         foreach (Transform child in parent)
