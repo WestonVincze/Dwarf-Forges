@@ -23,6 +23,7 @@ public class MobSpawner : MonoBehaviour
     public List<SpawnableMob> mobsToSpawn = new List<SpawnableMob>();
     public List<SpawnLocation> spawnLocations = new List<SpawnLocation>();
     public float overallSpawnRate = 1f;  // Time in seconds.
+    public bool showDebugVision = false;
 
     private float spawnTimer = 0f;
 
@@ -45,11 +46,6 @@ public class MobSpawner : MonoBehaviour
         }
     }
 
-    private void Test()
-    {
-        Debug.Log("dead dwarf");
-    }
-
     private void SpawnMobAtLocation(SpawnLocation location)
     {
         Vector3 spawnPosition = GetSpawnPositionWithinBox(location);
@@ -64,8 +60,8 @@ public class MobSpawner : MonoBehaviour
 
             MobBrain mobBrain = mob.GetComponentInChildren<MobBrain>();
             mobBrain.target = mobTarget;
+            mobBrain.showDebugVision = showDebugVision;
             mob.GetComponentInChildren<Destructible>().OnDeath += mobBrain.Die;
-            mob.GetComponentInChildren<Destructible>().OnDeath += Test;
         }
     }
 

@@ -9,9 +9,14 @@ public class GameManager : MonoBehaviour
 
     // TODO: default mode should be main menu
     private GameMode _currentGameMode = GameMode.Normal;
+    [SerializeField] private bool _inDebugMode = false;
     public GameMode currentGameMode
     {
         get { return _currentGameMode; }
+    }
+    public bool inDebugMode
+    {
+        get => _inDebugMode;
     }
 
     public GameMode defaultGameMode = GameMode.Normal;
