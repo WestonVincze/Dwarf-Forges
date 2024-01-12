@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
-  m_SkyboxMaterial: {fileID: 10304, guid: 0000000000000000f000000000000000, type: 0}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 1cf6f4c6e6e0518419839d3f5448dd99, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.3129087, g: 0.2935378, b: 0.5139925, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -960,7 +960,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 687212131}
-  m_LocalRotation: {x: 0.38268328, y: -0.000000015896626, z: 0.000000006584594, w: 0.9238796}
+  m_LocalRotation: {x: 0.38268328, y: 0.000000015896626, z: -0.000000006584594, w: 0.9238796}
   m_LocalPosition: {x: 1.83, y: 4.81, z: -68.990005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1241,7 +1241,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0.38268328, y: -0.000000015896626, z: 0.000000006584594, w: 0.9238796}
+  m_LocalRotation: {x: 0.38268328, y: 0.000000015896626, z: -0.000000006584594, w: 0.9238796}
   m_LocalPosition: {x: 1.83, y: 4.81, z: -68.990005}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -2618,15 +2618,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _grabType: 2
   grabState: 0
-  draggableLayerMask:
+  _draggableLayerMask:
     serializedVersion: 2
-    m_Bits: 128
-  furnaceLayerMask:
+    m_Bits: 0
+  _furnaceLayerMask:
     serializedVersion: 2
-    m_Bits: 256
-  ignoredLayerMask:
+    m_Bits: 0
+  _ignoredLayerMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   playAreaTag: SelectablePlayAreaParent
   craftingTag: SelectableCraftingParent
   highlightedMaterial: {fileID: 2100000, guid: 293570e2738421f46b89622036c0bd81, type: 2}
