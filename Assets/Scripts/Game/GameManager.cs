@@ -7,16 +7,17 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private bool _isPaused;
 
-    // TODO: default mode should be main menu
-    private GameMode _currentGameMode = GameMode.Normal;
     [SerializeField] private bool _inDebugMode = false;
-    public GameMode currentGameMode
-    {
-        get { return _currentGameMode; }
-    }
     public bool inDebugMode
     {
         get => _inDebugMode;
+    }
+
+    // TODO: default mode should be main menu
+    private GameMode _currentGameMode = GameMode.Normal;
+    public GameMode currentGameMode
+    {
+        get { return _currentGameMode; }
     }
 
     public GameMode defaultGameMode = GameMode.Normal;
@@ -58,7 +59,7 @@ public class GameManager : MonoBehaviour
         {
             enterActions[mode] += action;
         }
-        else 
+        else
         {
             enterActions.Add(mode, action);
         }
@@ -97,6 +98,11 @@ public class GameManager : MonoBehaviour
         {
             SetGameMode(mode);
         }
+    }
+
+    public void ToggleDebugMode()
+    {
+        _inDebugMode = !_inDebugMode;
     }
 
     public void PauseGame()
