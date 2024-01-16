@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,11 +8,15 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private bool _isPaused;
 
-    [SerializeField] private bool _inDebugMode = false;
+    private bool _inDebugMode = false;
+
     public bool inDebugMode
     {
         get => _inDebugMode;
     }
+
+    private Action _debugEnterActions;
+    private Action _debugExitActions;
 
     // TODO: default mode should be main menu
     private GameMode _currentGameMode = GameMode.Normal;
@@ -31,19 +36,19 @@ public class GameManager : MonoBehaviour
         PauseMenu,      // game is paused with pause menu UI displayed
     }
 
-    public Dictionary<GameMode, Action> enterActions = new Dictionary<GameMode, Action>();
-    public Dictionary<GameMode, Action> exitActions = new Dictionary<GameMode, Action>();
+    private Dictionary<GameMode, Action> _enterActions = new Dictionary<GameMode, Action>();
+    private Dictionary<GameMode, Action> _exitActions = new Dictionary<GameMode, Action>();
 
     private void OnEnable()
     {
-        enterActions.Add(GameMode.PauseMenu, PauseGame);
-        exitActions.Add(GameMode.PauseMenu, ResumeGame);
+        _enterActions.Add(GameMode.PauseMenu, PauseGame);
+        _exitActions.Add(GameMode.PauseMenu, ResumeGame);
     }
 
     private void OnDisable()
     {
-        enterActions.Clear();
-        exitActions.Clear();
+        _enterActions.Clear();
+        _exitActions.Clear();
     }
 
     private void Awake()
@@ -55,34 +60,34 @@ public class GameManager : MonoBehaviour
 
     public void AddEnterAction(GameMode mode, Action action)
     {
-        if (enterActions.ContainsKey(mode))
+        if (_enterActions.ContainsKey(mode))
         {
-            enterActions[mode] += action;
+            _enterActions[mode] += action;
         }
         else
         {
-            enterActions.Add(mode, action);
+            _enterActions.Add(mode, action);
         }
     }
 
     public void AddExitAction(GameMode mode, Action action)
     {
-        if (exitActions.ContainsKey(mode))
+        if (_exitActions.ContainsKey(mode))
         {
-            exitActions[mode] += action;
+            _exitActions[mode] += action;
         }
         else
         {
-            exitActions.Add(mode, action);
+            _exitActions.Add(mode, action);
         }
     }
 
     public void SetGameMode(GameMode mode)
     {
-        exitActions.TryGetValue(_currentGameMode, out Action exitAction);
+        _exitActions.TryGetValue(_currentGameMode, out Action exitAction);
         exitAction?.Invoke();
 
-        enterActions.TryGetValue(mode, out Action enterAction);
+        _enterActions.TryGetValue(mode, out Action enterAction);
         enterAction?.Invoke();
 
         _currentGameMode = mode;
@@ -100,9 +105,28 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void AddDebugEnterAction(Action action)
+    {
+        _debugEnterActions += action;
+    }
+
+    public void AddDebugExitAction(Action action)
+    {
+        _debugExitActions += action;
+    }
+
     public void ToggleDebugMode()
     {
         _inDebugMode = !_inDebugMode;
+        // entering debug mode
+        if (_inDebugMode)
+        {
+            _debugEnterActions?.Invoke();
+        }
+        else
+        {
+            _debugExitActions?.Invoke();
+        }
     }
 
     public void PauseGame()
