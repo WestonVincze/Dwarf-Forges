@@ -14,6 +14,7 @@ public class DebugConsole : MonoBehaviour
         yield return new WaitUntil(() => GameManager.instance != null);
         GameManager.instance.AddDebugEnterAction(() => gameObject.SetActive(true));
         GameManager.instance.AddDebugExitAction(() => gameObject.SetActive(false));
+        Debug.Log("Press ` to toggle debug mode.");
 
         gameObject.SetActive(GameManager.instance.inDebugMode);
     }
